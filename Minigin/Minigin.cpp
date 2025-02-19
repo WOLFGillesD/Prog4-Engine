@@ -11,6 +11,10 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include "Minigin.h"
+
+#include <thread>
+
+#include "DaeTime.h"
 #include "InputManager.h"
 #include "SceneManager.h"
 #include "Renderer.h"
@@ -101,8 +105,16 @@ void dae::Minigin::Run(const std::function<void()>& load)
 {
 	load();
 #ifndef __EMSCRIPTEN__
+	auto& sceneManager = SceneManager::GetInstance();
+
+	Time::m_FixedTimeStep = m_FixedTimeStep;
+
+	sceneManager.Start();
 	while (!m_quit)
+	{
 		RunOneFrame();
+	}
+	sceneManager.End();
 #else
 	emscripten_set_main_loop_arg(&LoopCallback, this, 0, true);
 #endif
@@ -110,7 +122,30 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 void dae::Minigin::RunOneFrame()
 {
-	m_quit = !InputManager::GetInstance().ProcessInput();
-	SceneManager::GetInstance().Update();
-	Renderer::GetInstance().Render();
+	auto& renderer = Renderer::GetInstance();
+	auto& sceneManager = SceneManager::GetInstance();
+	auto& input = InputManager::GetInstance();
+
+	const auto current_time = std::chrono::high_resolution_clock::now();
+	const float delta_time = std::chrono::duration<float>(current_time - Time::m_Last_time).count();
+	Time::m_Last_time = current_time;
+	Time::m_Lag += delta_time;
+	Time::m_DeltaTime = delta_time;
+
+	m_quit = !input.ProcessInput();
+
+	while (Time::m_Lag >= m_FixedTimeStep)
+	{
+		sceneManager.FixedUpdate();
+		Time::m_Lag -= m_FixedTimeStep;
+	}
+
+	sceneManager.Update();
+	sceneManager.LateUpdate();
+	renderer.Render();
+	sceneManager.RemoveMarkedForRemoval();
+
+	const auto sleep_time = current_time + std::chrono::milliseconds(m_MsPerFrame) - std::chrono::high_resolution_clock::now();
+	//const auto sleep_time = current_time + std::chrono::duration<float, std::milli>(1000 / Renderer::GetInstance().GetScreenRefreshRate()) - std::chrono::high_resolution_clock::now();   // To sync update with refresh rate
+	std::this_thread::sleep_for(sleep_time);
 }

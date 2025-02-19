@@ -9,11 +9,35 @@ void dae::SceneManager::Update()
 	}
 }
 
-void dae::SceneManager::Render()
+void dae::SceneManager::LateUpdate()
+{
+	for (auto& scene : m_scenes)
+	{
+		scene->LateUpdate();
+	}
+}
+
+void dae::SceneManager::Render() const
 {
 	for (const auto& scene : m_scenes)
 	{
 		scene->Render();
+	}
+}
+
+void dae::SceneManager::RemoveMarkedForRemoval()
+{
+	for (auto& scene : m_scenes)
+	{
+		scene->RemoveMarkedForRemoval();
+	}
+}
+
+void dae::SceneManager::End()
+{
+	for (auto& scene : m_scenes)
+	{
+		scene->End();
 	}
 }
 
@@ -22,4 +46,20 @@ dae::Scene& dae::SceneManager::CreateScene(const std::string& name)
 	const auto& scene = std::shared_ptr<Scene>(new Scene(name));
 	m_scenes.push_back(scene);
 	return *scene;
+}
+
+void dae::SceneManager::Start()
+{
+	for (auto& scene : m_scenes)
+	{
+		scene->Start();
+	}
+}
+
+void dae::SceneManager::FixedUpdate()
+{
+	for (auto& scene : m_scenes)
+	{
+		scene->FixedUpdate();
+	}
 }

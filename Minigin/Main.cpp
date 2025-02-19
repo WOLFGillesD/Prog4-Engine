@@ -10,10 +10,13 @@
 #include "Minigin.h"
 #include "SceneManager.h"
 #include "ResourceManager.h"
-#include "TextObject.h"
 #include "Scene.h"
 
 #include <filesystem>
+
+#include "Components/FpsComponent.h"
+#include "Components/TextComponent.h"
+#include "Components/TextureComponent.h"
 namespace fs = std::filesystem;
 
 void load()
@@ -21,18 +24,25 @@ void load()
 	auto& scene = dae::SceneManager::GetInstance().CreateScene("Demo");
 
 	auto go = std::make_shared<dae::GameObject>();
-	go->SetTexture("background.tga");
+	go->AddComponent<dae::TextureComponent>("background.tga");
 	scene.Add(go);
 
 	go = std::make_shared<dae::GameObject>();
-	go->SetTexture("logo.tga");
+	go->AddComponent<dae::TextureComponent>("logo.tga");
 	go->SetPosition(216, 180);
 	scene.Add(go);
 
+	go = std::make_shared<dae::GameObject>();
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	auto to = std::make_shared<dae::TextObject>("Programming 4 Assignment", font);
-	to->SetPosition(80, 20);
-	scene.Add(to);
+	go->AddComponent<dae::TextComponent>("Programming 4 Assignment", font);
+	go->SetPosition(80, 20);
+	scene.Add(go);
+
+	go = std::make_shared<dae::GameObject>();
+	go->AddComponent<dae::TextComponent>("FPS", font);
+	go->AddComponent<dae::FpsComponent>();
+	go->SetPosition(20, 80);
+	scene.Add(go);
 }
 
 int main(int, char*[]) {

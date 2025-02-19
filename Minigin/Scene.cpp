@@ -26,6 +26,22 @@ void Scene::RemoveAll()
 	m_objects.clear();
 }
 
+void Scene::Start()
+{
+	for (auto& object : m_objects)
+	{
+		object->Start();
+	}
+}
+
+void Scene::FixedUpdate()
+{
+	for (auto& object : m_objects)
+	{
+		object->FixedUpdate();
+	}
+}
+
 void Scene::Update()
 {
 	for(auto& object : m_objects)
@@ -34,11 +50,35 @@ void Scene::Update()
 	}
 }
 
+void Scene::LateUpdate()
+{
+	for (auto& object : m_objects)
+	{
+		object->LateUpdate();
+	}
+}
+
 void Scene::Render() const
 {
 	for (const auto& object : m_objects)
 	{
 		object->Render();
+	}
+}
+
+void Scene::RemoveMarkedForRemoval()
+{
+	for (const auto& object : m_objects)
+	{
+		object->RemoveMarkedForRemoval();
+	}
+}
+
+void Scene::End()
+{
+	for (auto& object : m_objects)
+	{
+		object->End();
 	}
 }
 

@@ -12,8 +12,15 @@ namespace dae
 	public:
 		Scene& CreateScene(const std::string& name);
 
+		void Start();
+
+		void FixedUpdate();
 		void Update();
-		void Render();
+		void LateUpdate();
+		void Render() const;
+		void RemoveMarkedForRemoval();
+
+		void End();
 	private:
 		friend class Singleton<SceneManager>;
 		SceneManager() = default;
