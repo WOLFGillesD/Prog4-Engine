@@ -21,7 +21,6 @@ namespace dae
 
 		void End();
 
-		void SetPosition(float x, float y);
 
 		// Adds a component to the gameobject
 		template<typename ComponentType, typename... Args>
@@ -61,18 +60,42 @@ namespace dae
 			return nullptr;
 		}
 
-		Transform GetTransform() const { return m_transform; }
-		void SetTransform(const Transform& transform) { m_transform = transform; }
+		void SetPosition(float x, float y);
+
+		Transform GetWorldTransform();
+		void SetTransform(const Transform& transform);
+
+		void SetParent(GameObject* parent, bool keepWorldPosition);
+		const glm::vec3& GetWorldPosition();
+		const glm::vec3& GetLocalPosition() const;
+
+		void UpdateWorldPosition();
+
+		GameObject* GetParent() const;
+		void AddChild(GameObject* go);
+		void RemoveChild(GameObject* go);
+
+		bool GetMarkedForRemoval() const { return m_MarkedForRemoval; }
+		void SetMarkForRemoval() { m_MarkedForRemoval = true; }
+
 
 		GameObject() = default;
-		~GameObject();
+		~GameObject() = default;
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 
 	private:
-		Transform m_transform{};
+		Transform m_WorldTransform{};
+		Transform m_LocalTransform{};
+		bool m_PositionIsDirty{};
+		bool m_MarkedForRemoval{ false };
+
+		GameObject* m_Parent{};
 		std::vector<std::unique_ptr<Component>> m_Components{};
+		std::vector<GameObject*> m_Children{};
+
+		bool IsChild(const GameObject* go) const;
 	};
 }

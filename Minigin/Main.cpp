@@ -15,6 +15,7 @@
 #include <filesystem>
 
 #include "Components/FpsComponent.h"
+#include "Components/RotatorComponent.h"
 #include "Components/TextComponent.h"
 #include "Components/TextureComponent.h"
 namespace fs = std::filesystem;
@@ -43,6 +44,24 @@ void load()
 	go->AddComponent<dae::FpsComponent>();
 	go->SetPosition(20, 80);
 	scene.Add(go);
+
+	go = std::make_shared<dae::GameObject>();
+	go->SetPosition(500, 350);
+
+	auto go2 = std::make_shared<dae::GameObject>();
+	go2->AddComponent<dae::RotatorComponent>();
+	go2->AddComponent<dae::TextureComponent>("CEMERALD.tga");
+	go2->SetParent(go.get(), false);
+
+	//go->AddComponent<dae::RotatorComponent>();
+	auto go3 = std::make_shared<dae::GameObject>();
+	go3->AddComponent<dae::TextureComponent>("CEMERALD.tga");
+	go3->AddComponent<dae::RotatorComponent>(50.f, static_cast<float>(2*M_PI));
+	go3->SetParent(go2.get(), false);
+
+	scene.Add(go);
+	scene.Add(go2);
+	scene.Add(go3);
 }
 
 int main(int, char*[]) {

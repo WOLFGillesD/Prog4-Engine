@@ -46,7 +46,8 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
  Minigin/Components/TextureComponent.h 
  Minigin/DaeTime.cpp
  Minigin/DaeTime.h 
-)
+ Minigin/Components/RotatorComponent.cpp
+ Minigin/Components/RotatorComponent.h)
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)

@@ -6,7 +6,86 @@
 #include "ResourceManager.h"
 #include "Renderer.h"
 
-dae::GameObject::~GameObject() = default;
+dae::Transform dae::GameObject::GetWorldTransform()
+{
+	if (m_PositionIsDirty)
+		UpdateWorldPosition();
+	return m_WorldTransform;
+}
+
+void dae::GameObject::SetTransform(const Transform& transform)
+{
+	m_LocalTransform = transform;
+	m_PositionIsDirty = true;
+}
+
+void dae::GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
+{
+	if (IsChild(parent) || parent == this || m_Parent == parent)
+		return;
+	if (parent == nullptr)
+		m_LocalTransform.SetPosition(GetWorldPosition());
+	else
+	{
+		if (keepWorldPosition)
+			m_LocalTransform.SetPosition(GetWorldPosition() - parent->GetWorldPosition());
+		m_PositionIsDirty = true;
+	}
+
+	if (m_Parent) m_Parent->RemoveChild(this);
+	m_Parent = parent;
+	if (m_Parent) m_Parent->AddChild(this);
+}
+
+const glm::vec3& dae::GameObject::GetWorldPosition()
+{
+	if (m_PositionIsDirty)
+		UpdateWorldPosition();
+	return m_WorldTransform.GetPosition();
+}
+
+const glm::vec3& dae::GameObject::GetLocalPosition() const
+{
+	return m_LocalTransform.GetPosition();
+}
+
+void dae::GameObject::UpdateWorldPosition()
+{
+	if (m_PositionIsDirty)
+	{
+		if (m_Parent == nullptr)
+			m_WorldTransform = m_LocalTransform;
+		else
+			m_WorldTransform.SetPosition(m_Parent->GetWorldPosition() + m_LocalTransform.GetPosition());
+	}
+	m_PositionIsDirty = false;
+
+}
+
+dae::GameObject* dae::GameObject::GetParent() const
+{
+	return m_Parent;
+}
+
+void dae::GameObject::AddChild(GameObject* go)
+{
+	m_Children.push_back(go);
+}
+
+void dae::GameObject::RemoveChild(GameObject* go)
+{
+	std::erase_if(m_Children, [go](GameObject* gameObject) { return go == gameObject; });
+}
+
+bool dae::GameObject::IsChild(const GameObject* go) const
+{
+	for (const auto & child : m_Children)
+	{
+		if (child == go)
+			return true;
+	} 
+	return false;
+}
 
 void dae::GameObject::Start()
 {
@@ -50,16 +129,6 @@ void dae::GameObject::Render() const
 
 void dae::GameObject::RemoveMarkedForRemoval()
 {
-
-	//for (int index{ m_Components.size() }; index > 0 ; --index)
-	//{
-	//	const auto& comp{ m_Components[index] };
-	//	if (comp->m_MarkedForRemoval)
-	//	{
-	//		m_Components.erase(m_Components.begin() + index);
-	//	}
-	//}
-
 	std::erase_if(m_Components, [](const std::unique_ptr<Component>& comp) { return comp->m_MarkedForRemoval; });
 }
 
@@ -73,5 +142,6 @@ void dae::GameObject::End()
 
 void dae::GameObject::SetPosition(float x, float y)
 {
-	m_transform.SetPosition(x, y, 0.0f);
+	m_LocalTransform.SetPosition(x, y, 0.0f);
+	m_PositionIsDirty = true;
 }

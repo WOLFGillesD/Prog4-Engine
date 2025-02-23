@@ -12,5 +12,5 @@ dae::TextureComponent::TextureComponent(GameObject& go, const std::string& fullP
 
 void dae::TextureComponent::Render() const
 {
-	Renderer::GetInstance().RenderTexture(*m_Texture2D, GetOwner()->GetTransform().GetPosition().x, GetOwner()->GetTransform().GetPosition().y);
+	Renderer::GetInstance().RenderTexture(*m_Texture2D, GetOwner()->GetWorldTransform().GetPosition().x, GetOwner()->GetWorldTransform().GetPosition().y);
 }
