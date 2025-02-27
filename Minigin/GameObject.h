@@ -69,15 +69,10 @@ namespace dae
 		const glm::vec3& GetWorldPosition();
 		const glm::vec3& GetLocalPosition() const;
 
-		void UpdateWorldPosition();
-
 		GameObject* GetParent() const;
-		void AddChild(GameObject* go);
-		void RemoveChild(GameObject* go);
 
 		bool GetMarkedForRemoval() const { return m_MarkedForRemoval; }
 		void SetMarkForRemoval() { m_MarkedForRemoval = true; }
-
 
 		GameObject() = default;
 		~GameObject() = default;
@@ -97,5 +92,8 @@ namespace dae
 		std::vector<GameObject*> m_Children{};
 
 		bool IsChild(const GameObject* go) const;
+		void AddChild(GameObject* go);
+		void RemoveChild(GameObject* go);
+		void UpdateWorldPosition();
 	};
 }

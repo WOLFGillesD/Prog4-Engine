@@ -108,6 +108,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	auto& sceneManager = SceneManager::GetInstance();
 
 	Time::m_FixedTimeStep = m_FixedTimeStep;
+	Time::m_Last_time = std::chrono::high_resolution_clock::now();
 
 	sceneManager.Start();
 	while (!m_quit)
