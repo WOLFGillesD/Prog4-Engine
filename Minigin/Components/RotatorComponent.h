@@ -12,7 +12,6 @@ namespace dae
 		RotatorComponent(GameObject& go, float radius = 25.f, float rotationSpeed = static_cast<float>(M_PI));
 		~RotatorComponent() override = default;
 
-		void Start() override;
 		void Update() override;
 
 		RotatorComponent(const RotatorComponent& other) = delete;
@@ -24,6 +23,5 @@ namespace dae
 		const float m_radius{};
 		const float m_rotationSpeed{};
 		float m_CurrentRot{};
-		glm::vec2 m_center{};
 	};
 }

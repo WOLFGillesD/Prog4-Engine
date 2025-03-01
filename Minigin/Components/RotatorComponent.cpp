@@ -8,11 +8,6 @@ dae::RotatorComponent::RotatorComponent(GameObject& go, float radius, float rota
 {
 }
 
-void dae::RotatorComponent::Start()
-{
-	m_center = GetOwner()->GetLocalPosition();
-}
-
 void dae::RotatorComponent::Update()
 {
 	m_CurrentRot += Time::m_DeltaTime * m_rotationSpeed;
@@ -20,9 +15,9 @@ void dae::RotatorComponent::Update()
 	{
 		m_CurrentRot -= static_cast<float>(2.f*M_PI);
 	}
-	glm::vec2 pos = m_center;
+	glm::vec2 pos{};
 	pos.x += m_radius * cos(m_CurrentRot);
 	pos.y += m_radius * sin(m_CurrentRot);
 
-	GetOwner()->SetPosition(pos.x, pos.y);
+	GetOwner()->SetLocalPosition(pos.x, pos.y);
 }

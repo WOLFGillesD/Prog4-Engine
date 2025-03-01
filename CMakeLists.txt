@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.26)
 project(Minigin)
 
+include(FetchContent)
+
 if(EMSCRIPTEN)
   message("Using Emscripten!")
 endif()
@@ -12,6 +14,23 @@ else()
   set(TARGET_NAME minigin)
   set(TARGET_PARAM WIN32)
 endif()
+
+FetchContent_Declare(
+      ImGui
+      GIT_REPOSITORY https://github.com/ocornut/imgui
+      GIT_TAG        v1.91.7-docking
+      GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(ImGui)
+
+set(IMGUI_SRC
+    "${imgui_SOURCE_DIR}/imgui.cpp"
+    "${imgui_SOURCE_DIR}/imgui_draw.cpp"
+    "${imgui_SOURCE_DIR}/imgui_tables.cpp"
+    "${imgui_SOURCE_DIR}/imgui_widgets.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp"
+    "${imgui_SOURCE_DIR}/imgui_demo.cpp")
 
 # list source files here
 add_executable(${TARGET_NAME} ${TARGET_PARAM}
@@ -47,14 +66,16 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
  Minigin/DaeTime.cpp
  Minigin/DaeTime.h 
  Minigin/Components/RotatorComponent.cpp
- Minigin/Components/RotatorComponent.h)
+ Minigin/Components/RotatorComponent.h
+ ${IMGUI_SRC})
+
+target_include_directories(${TARGET_NAME} PRIVATE ${imgui_SOURCE_DIR})
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
 # set minigin as the default startup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${TARGET_NAME})
 
-include(FetchContent)
 # add glm
 FetchContent_Declare(
   glm

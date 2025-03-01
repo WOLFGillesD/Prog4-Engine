@@ -20,6 +20,9 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 
+#include <imgui.h>
+
+
 SDL_Window* g_window{};
 
 void LogSDLVersion(const std::string& message, const SDL_version& v)

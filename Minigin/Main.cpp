@@ -30,23 +30,23 @@ void load()
 
 	go = std::make_shared<dae::GameObject>();
 	go->AddComponent<dae::TextureComponent>("logo.tga");
-	go->SetPosition(216, 180);
+	go->SetLocalPosition(216, 180);
 	scene.Add(go);
 
 	go = std::make_shared<dae::GameObject>();
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 	go->AddComponent<dae::TextComponent>("Programming 4 Assignment", font);
-	go->SetPosition(80, 20);
+	go->SetLocalPosition(80, 20);
 	scene.Add(go);
 
 	go = std::make_shared<dae::GameObject>();
 	go->AddComponent<dae::TextComponent>("FPS", font);
 	go->AddComponent<dae::FpsComponent>();
-	go->SetPosition(20, 80);
+	go->SetLocalPosition(20, 80);
 	scene.Add(go);
 
 	go = std::make_shared<dae::GameObject>();
-	go->SetPosition(500, 350);
+	go->SetLocalPosition(500, 350);
 
 	auto go2 = std::make_shared<dae::GameObject>();
 	go2->AddComponent<dae::RotatorComponent>();
@@ -56,7 +56,7 @@ void load()
 	//go->AddComponent<dae::RotatorComponent>();
 	auto go3 = std::make_shared<dae::GameObject>();
 	go3->AddComponent<dae::TextureComponent>("CEMERALD.tga");
-	go3->AddComponent<dae::RotatorComponent>(50.f, static_cast<float>(2*M_PI));
+	go3->AddComponent<dae::RotatorComponent>(25.f, static_cast<float>(2*M_PI));
 	go3->SetParent(go2.get(), false);
 
 	scene.Add(go);

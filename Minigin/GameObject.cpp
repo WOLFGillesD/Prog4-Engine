@@ -13,10 +13,10 @@ dae::Transform dae::GameObject::GetWorldTransform()
 	return m_WorldTransform;
 }
 
-void dae::GameObject::SetTransform(const Transform& transform)
+void dae::GameObject::SetLocalTransform(const Transform& transform)
 {
 	m_LocalTransform = transform;
-	m_PositionIsDirty = true;
+	SetPositionDirty();
 }
 
 void dae::GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
@@ -29,7 +29,7 @@ void dae::GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
 	{
 		if (keepWorldPosition)
 			m_LocalTransform.SetPosition(GetWorldPosition() - parent->GetWorldPosition());
-		m_PositionIsDirty = true;
+		SetPositionDirty();
 	}
 
 	if (m_Parent) m_Parent->RemoveChild(this);
@@ -65,6 +65,24 @@ void dae::GameObject::UpdateWorldPosition()
 dae::GameObject* dae::GameObject::GetParent() const
 {
 	return m_Parent;
+}
+
+void dae::GameObject::SetMarkForRemoval()
+{
+	m_MarkedForRemoval = true;
+	for (const auto& child : m_Children)
+	{
+		child->SetMarkForRemoval();
+	}
+}
+
+void dae::GameObject::SetPositionDirty()
+{
+	m_PositionIsDirty = true;
+	for (const auto& child : m_Children)
+	{
+		child->SetPositionDirty();
+	}
 }
 
 void dae::GameObject::AddChild(GameObject* go)
@@ -140,8 +158,8 @@ void dae::GameObject::End()
 	}
 }
 
-void dae::GameObject::SetPosition(float x, float y)
+void dae::GameObject::SetLocalPosition(float x, float y)
 {
 	m_LocalTransform.SetPosition(x, y, 0.0f);
-	m_PositionIsDirty = true;
+	SetPositionDirty();
 }

@@ -18,6 +18,7 @@ namespace dae
 		void LateUpdate();
 		void Render() const;
 		void RemoveMarkedForRemoval();
+		void ImGuiUpdate();
 
 		void End();
 
@@ -60,10 +61,10 @@ namespace dae
 			return nullptr;
 		}
 
-		void SetPosition(float x, float y);
+		void SetLocalPosition(float x, float y);
 
 		Transform GetWorldTransform();
-		void SetTransform(const Transform& transform);
+		void SetLocalTransform(const Transform& transform);
 
 		void SetParent(GameObject* parent, bool keepWorldPosition);
 		const glm::vec3& GetWorldPosition();
@@ -72,7 +73,8 @@ namespace dae
 		GameObject* GetParent() const;
 
 		bool GetMarkedForRemoval() const { return m_MarkedForRemoval; }
-		void SetMarkForRemoval() { m_MarkedForRemoval = true; }
+		void SetMarkForRemoval();
+		void SetPositionDirty();
 
 		GameObject() = default;
 		~GameObject() = default;
