@@ -18,6 +18,7 @@
 #include "Components/RotatorComponent.h"
 #include "Components/TextComponent.h"
 #include "Components/TextureComponent.h"
+#include "Components/ThrashAndCacheComponent.h"
 namespace fs = std::filesystem;
 
 void load()
@@ -62,6 +63,11 @@ void load()
 	scene.Add(go);
 	scene.Add(go2);
 	scene.Add(go3);
+
+	go = std::make_shared<dae::GameObject>();
+	go->AddComponent<dae::ThrashAndCacheComponent>();
+
+	scene.Add(go);
 }
 
 int main(int, char*[]) {

@@ -25,6 +25,7 @@ namespace dae
 		virtual void Update(){}
 		virtual void LateUpdate(){}
 		virtual void Render() const{}
+		virtual void ImGuiUpdate(){}
 
 		virtual void End() {}
 

@@ -25,6 +25,14 @@ void dae::SceneManager::Render() const
 	}
 }
 
+void dae::SceneManager::ImGuiUpdate()
+{
+	for (const auto& scene : m_scenes)
+	{
+		scene->ImGuiUpdate();
+	}
+}
+
 void dae::SceneManager::RemoveMarkedForRemoval()
 {
 	for (auto& scene : m_scenes)

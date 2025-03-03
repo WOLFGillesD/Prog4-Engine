@@ -66,6 +66,14 @@ void Scene::Render() const
 	}
 }
 
+void Scene::ImGuiUpdate()
+{
+	for (const auto& object : m_objects)
+	{
+		object->ImGuiUpdate();
+	}
+}
+
 void Scene::RemoveMarkedForRemoval()
 {
 	std::erase_if(m_objects, [](std::shared_ptr<GameObject> go) { return go->GetMarkedForRemoval(); });

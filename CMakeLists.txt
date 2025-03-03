@@ -23,6 +23,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(ImGui)
 
+FetchContent_Declare(
+      ImPlot
+      GIT_REPOSITORY https://github.com/epezent/implot
+      GIT_TAG        v0.16
+      GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(ImPlot)
+
 set(IMGUI_SRC
     "${imgui_SOURCE_DIR}/imgui.cpp"
     "${imgui_SOURCE_DIR}/imgui_draw.cpp"
@@ -32,44 +40,52 @@ set(IMGUI_SRC
     "${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp"
     "${imgui_SOURCE_DIR}/imgui_demo.cpp")
 
+set(IMPLOT_SRC
+    "${implot_SOURCE_DIR}/implot.cpp"
+    "${implot_SOURCE_DIR}/implot_items.cpp")
+
 # list source files here
 add_executable(${TARGET_NAME} ${TARGET_PARAM}
-  Minigin/Font.cpp
-  Minigin/Font.h
-  Minigin/GameObject.cpp
-  Minigin/GameObject.h
-  Minigin/InputManager.cpp
-  Minigin/InputManager.h
-  Minigin/Main.cpp
-  Minigin/Minigin.cpp
-  Minigin/Minigin.h
-  Minigin/Renderer.cpp
-  Minigin/Renderer.h
-  Minigin/ResourceManager.cpp
-  Minigin/ResourceManager.h
-  Minigin/Scene.cpp
-  Minigin/Scene.h
-  Minigin/SceneManager.cpp
-  Minigin/SceneManager.h
-  Minigin/Texture2D.cpp
-  Minigin/Texture2D.h
-  Minigin/Transform.cpp
-  Minigin/Transform.h
-  Minigin/Components/Component.cpp
-  Minigin/Components/Component.h
-  Minigin/Components/FpsComponent.cpp
-  Minigin/Components/FpsComponent.h
-  Minigin/Components/TextComponent.cpp
-  Minigin/Components/TextComponent.h
- Minigin/Components/TextureComponent.cpp 
- Minigin/Components/TextureComponent.h 
- Minigin/DaeTime.cpp
- Minigin/DaeTime.h 
- Minigin/Components/RotatorComponent.cpp
- Minigin/Components/RotatorComponent.h
- ${IMGUI_SRC})
+  "Minigin/Font.cpp"
+  "Minigin/Font.h"
+  "Minigin/GameObject.cpp"
+  "Minigin/GameObject.h"
+  "Minigin/InputManager.cpp"
+  "Minigin/InputManager.h"
+  "Minigin/Main.cpp"
+  "Minigin/Minigin.cpp"
+  "Minigin/Minigin.h"
+  "Minigin/Renderer.cpp"
+  "Minigin/Renderer.h"
+  "Minigin/ResourceManager.cpp"
+  "Minigin/ResourceManager.h"
+  "Minigin/Scene.cpp"
+  "Minigin/Scene.h"
+  "Minigin/SceneManager.cpp"
+  "Minigin/SceneManager.h"
+  "Minigin/Texture2D.cpp"
+  "Minigin/Texture2D.h"
+  "Minigin/Transform.cpp"
+  "Minigin/Transform.h"
+  "Minigin/Components/Component.cpp"
+  "Minigin/Components/Component.h"
+  "Minigin/Components/FpsComponent.cpp"
+  "Minigin/Components/FpsComponent.h"
+  "Minigin/Components/TextComponent.cpp"
+  "Minigin/Components/TextComponent.h"
+  "Minigin/Components/TextureComponent.cpp" 
+  "Minigin/Components/TextureComponent.h" 
+  "Minigin/DaeTime.cpp"
+  "Minigin/DaeTime.h" 
+  "Minigin/Components/RotatorComponent.cpp"
+  "Minigin/Components/RotatorComponent.h"
+  "Minigin/Components/ThrashAndCacheComponent.cpp"
+  "Minigin/Components/ThrashAndCacheComponent.h"
+  "Minigin/ImGuiRenderer.cpp" 
+  "Minigin/ImGuiRenderer.h"
+ ${IMGUI_SRC} ${IMPLOT_SRC} )
 
-target_include_directories(${TARGET_NAME} PRIVATE ${imgui_SOURCE_DIR})
+target_include_directories(${TARGET_NAME} PRIVATE ${implot_SOURCE_DIR} ${imgui_SOURCE_DIR})
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)

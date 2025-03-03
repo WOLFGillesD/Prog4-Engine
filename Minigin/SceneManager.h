@@ -18,6 +18,7 @@ namespace dae
 		void Update();
 		void LateUpdate();
 		void Render() const;
+		void ImGuiUpdate();
 		void RemoveMarkedForRemoval();
 
 		void End();

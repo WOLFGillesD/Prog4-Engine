@@ -150,6 +150,14 @@ void dae::GameObject::RemoveMarkedForRemoval()
 	std::erase_if(m_Components, [](const std::unique_ptr<Component>& comp) { return comp->m_MarkedForRemoval; });
 }
 
+void dae::GameObject::ImGuiUpdate()
+{
+	for (const auto& comp : m_Components)
+	{
+		comp->ImGuiUpdate();
+	}
+}
+
 void dae::GameObject::End()
 {
 	for (const auto& comp : m_Components)
