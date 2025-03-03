@@ -132,7 +132,6 @@ void dae::Minigin::Run(const std::function<void()>& load)
 void dae::Minigin::RunOneFrame()
 {
 	auto& renderer = Renderer::GetInstance();
-	auto& imGuiRenderer = ImGuiRenderer::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = InputManager::GetInstance();
 
@@ -153,7 +152,6 @@ void dae::Minigin::RunOneFrame()
 	sceneManager.Update();
 	sceneManager.LateUpdate();
 	renderer.Render();
-	imGuiRenderer.Render();
 	sceneManager.RemoveMarkedForRemoval();
 
 	const auto sleep_time = current_time + std::chrono::milliseconds(m_MsPerFrame) - std::chrono::high_resolution_clock::now();

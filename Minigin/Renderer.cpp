@@ -2,6 +2,7 @@
 #include <cstring>
 #include "Renderer.h"
 
+#include "ImGuiRenderer.h"
 #include "SceneManager.h"
 #include "Texture2D.h"
 
@@ -37,6 +38,9 @@ void dae::Renderer::Render() const
 	SDL_RenderClear(m_renderer);
 
 	SceneManager::GetInstance().Render();
+
+	ImGuiRenderer::GetInstance().Render();
+
 
 	SDL_RenderPresent(m_renderer);
 }
