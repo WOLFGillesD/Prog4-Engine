@@ -20,6 +20,7 @@
 #include "Components/TextComponent.h"
 #include "Components/TextureComponent.h"
 #include "Components/ControllerMovementComponent.h"
+#include "Components/KeyboardMovementComponent.h"
 namespace fs = std::filesystem;
 
 void load()
@@ -27,8 +28,11 @@ void load()
 	auto& scene = dae::SceneManager::GetInstance().CreateScene("Demo");
 	auto& inputManager = dae::InputManager::GetInstance();
 
-	auto im = std::make_unique<dae::InputMapping>();
-	inputManager.SetInputMapping(std::move(im));
+	auto imc = std::make_unique<dae::InputMapping>();
+	auto imk = std::make_unique<dae::InputMapping>();
+	inputManager.SetControllerInputMapping(std::move(imc));
+	inputManager.SetKeyboardInputMapping(std::move(imk));
+
 
 	auto go = std::make_shared<dae::GameObject>();
 	go->AddComponent<dae::TextureComponent>("background.tga");
@@ -54,13 +58,12 @@ void load()
 	go = std::make_shared<dae::GameObject>();
 	go->SetLocalPosition(500, 350);
 
-	auto go2 = std::make_shared<dae::GameObject>();
-	go2->AddComponent<dae::RotatorComponent>();
-	go2->AddComponent<dae::TextureComponent>("CEMERALD.tga");
-	go2->SetParent(go.get(), false);
+	go = std::make_shared<dae::GameObject>();
+	go->AddComponent<dae::TextureComponent>("CEMERALD.tga");
+	go->AddComponent<dae::KeyboardMovementComponent>();
+	go->SetLocalPosition(500, 350);
 
 	scene.Add(go);
-	scene.Add(go2);
 
 	go = std::make_shared<dae::GameObject>();
 	go->AddComponent<dae::TextureComponent>("CEMERALD.tga");

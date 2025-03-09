@@ -91,7 +91,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     "Minigin/Input/Gamepad.h"
     "Minigin/Components/ControllerMovementComponent.h" 
     "Minigin/Components/ControllerMovementComponent.cpp"
-    ${IMGUI_SRC} ${IMPLOT_SRC})
+    ${IMGUI_SRC} ${IMPLOT_SRC} "Minigin/Components/KeyboardMovementComponent.h" "Minigin/Components/KeyboardMovementComponent.cpp")
 
 target_include_directories(${TARGET_NAME} PRIVATE ${implot_SOURCE_DIR} ${imgui_SOURCE_DIR})
 

@@ -34,69 +34,116 @@ void dae::InputMapping::ClearCommandsForButton(unsigned int button)
 bool dae::InputManager::ProcessInput()
 {
 	SDL_Event e;
+
 	m_Controller->ProcessInput();
 
-	for (const auto & map : m_Mapping->GetCommands())
+	if (m_ControllerMapping.get() != nullptr)
 	{
-		auto button = map.first;
-		auto inputCommands = map.second;
-
-		for (const auto & inputCommand : inputCommands)
+		for (const auto& map : m_ControllerMapping->GetCommands())
 		{
-			switch (inputCommand.inputState)
+			auto button = map.first;
+			auto inputCommands = map.second;
+
+			for (const auto& inputCommand : inputCommands)
 			{
-			case InputState::IsPressed:
-				if (m_Controller->IsPressed(button))
-					inputCommand.command->Execute();
-				break;
-			case InputState::IsUp:
-				if (m_Controller->IsUpThisFrame(button))
-					inputCommand.command->Execute();
-				break;
-			case InputState::IsDown:
-				if (m_Controller->IsDownThisFrame(button))
-					inputCommand.command->Execute();
-				break;
+				switch (inputCommand.inputState)
+				{
+				case InputState::IsPressed:
+					if (m_Controller->IsPressed(button))
+						inputCommand.command->Execute();
+					break;
+				case InputState::IsUp:
+					if (m_Controller->IsUpThisFrame(button))
+						inputCommand.command->Execute();
+					break;
+				case InputState::IsDown:
+					if (m_Controller->IsDownThisFrame(button))
+						inputCommand.command->Execute();
+					break;
+				}
 			}
 		}
 	}
 
-	if (m_Controller->IsDownThisFrame(static_cast<unsigned int>(GamePadInput::GAMEPAD_A)))
-	{
-		std::cout << "Hello" << std::endl;
-	}
-
-	while (SDL_PollEvent(&e)) 
+	while (SDL_PollEvent(&e))
 	{
 		ImGui_ImplSDL2_ProcessEvent(&e);
 
-		if (e.type == SDL_QUIT) { return false;	}
-		if (e.type == SDL_KEYDOWN) 
+		if (m_ControllerMapping.get() != nullptr)
 		{
-			
-		}
-		if (e.type == SDL_MOUSEBUTTONDOWN) 
-		{
-			
-		}
-		if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_CLOSE and e.window.windowID ==
-			SDL_GetWindowID(Renderer::GetInstance().GetSDLWindow())) 
-		{
-			return false;
-		}
-		// etc...
-	}
+			if (e.type == SDL_QUIT) { return false; }
+			if (e.type == SDL_KEYDOWN)
+			{
+				auto keyboard = m_KeyBoardMapping->GetCommands();
+				auto button = e.key.keysym.sym;
+				if (keyboard.contains(button))
+				{
+					auto inputCommands = keyboard.find(button)->second;
+					for (const auto& inputCommand : inputCommands)
+					{
+						if (inputCommand.inputState == InputState::IsPressed)
+						{
+							inputCommand.command->Execute();
+						}
 
+						if (e.key.repeat == 0 && inputCommand.inputState == InputState::IsDown)
+						{
+							inputCommand.command->Execute();
+						}
+					}
+				}
+			}
+			if (e.type == SDL_KEYUP)
+			{
+				if (e.key.repeat == 0)
+				{
+					auto keyboard = m_KeyBoardMapping->GetCommands();
+					auto button = e.key.keysym.sym;
+					if (keyboard.contains(button))
+					{
+						auto inputCommands = keyboard.find(button)->second;
+						for (const auto& inputCommand : inputCommands)
+						{
+							if (inputCommand.inputState == InputState::IsUp)
+							{
+								inputCommand.command->Execute();
+							}
+						}
+					}
+				}
+			}
+			if (e.type == SDL_MOUSEBUTTONDOWN)
+			{
+
+			}
+			if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_CLOSE and e.window.windowID ==
+				SDL_GetWindowID(Renderer::GetInstance().GetSDLWindow()))
+			{
+				return false;
+			}
+		}
+	}
 	return true;
 }
 
-void dae::InputManager::SetInputMapping(std::unique_ptr<InputMapping> inputMapping)
+void dae::InputManager::SetControllerInputMapping(std::unique_ptr<InputMapping> inputMapping)
 {
-	m_Mapping.release();
-	m_Mapping = std::move(inputMapping);
+	m_ControllerMapping.release();
+	m_ControllerMapping = std::move(inputMapping);
 }
 
-dae::InputMapping* dae::InputManager::GetInputMapping()
+void dae::InputManager::SetKeyboardInputMapping(std::unique_ptr<InputMapping> inputMapping)
 {
-	return m_Mapping.get();
+	m_KeyBoardMapping.release();
+	m_KeyBoardMapping = std::move(inputMapping);
+}
+
+dae::InputMapping* dae::InputManager::GetControllerInputMapping()
+{
+	return m_ControllerMapping.get();
+}
+
+dae::InputMapping* dae::InputManager::GetKeyboardInputMapping()
+{
+	return m_KeyBoardMapping.get();
 }

@@ -1,78 +1,79 @@
-#include "ControllerMovementComponent.h"
+#include "KeyboardMovementComponent.h"
 
 #include "DaeTime.h"
 #include "GameObject.h"
 #include "InputManager.h"
+#include "SDL_keycode.h"
 
 namespace dae
 {
-	MoveCommand::MoveCommand(ControllerMovementComponent* actor)
+	KeyBoardMoveCommand::KeyBoardMoveCommand(KeyboardMovementComponent* actor)
 		: m_actor(actor)
 	{
 	}
 
-	MoveCommand::~MoveCommand()
+	KeyBoardMoveCommand::~KeyBoardMoveCommand()
 	{
 	}
 
-	void MoveLeftCommand::Execute()
+	void KeyBoardMoveLeftCommand::Execute()
 	{
 		GetGameActor()->OnMoveLeft();
 	}
 
-	void MoveRightCommand::Execute()
+	void KeyBoardMoveRightCommand::Execute()
 	{
 		GetGameActor()->OnMoveRight();
 	}
 
-	void MoveUpCommand::Execute()
+	void KeyBoardMoveUpCommand::Execute()
 	{
 		GetGameActor()->OnMoveUp();
 	}
 
-	void MoveDownCommand::Execute()
+	void KeyBoardMoveDownCommand::Execute()
 	{
 		GetGameActor()->OnMoveDown();
 	}
 
-	ControllerMovementComponent::ControllerMovementComponent(GameObject& go, float moveSpeed)
+	KeyboardMovementComponent::KeyboardMovementComponent(GameObject& go, float moveSpeed)
 		: Component(go), m_moveSpeed(moveSpeed)
 	{
 		auto& inputManager = dae::InputManager::GetInstance();
-		auto inputMapping = inputManager.GetControllerInputMapping();
+		auto inputMapping = inputManager.GetKeyboardInputMapping();
 
 		dae::InputCommand ic{ &m_MoveLeft, dae::InputState::IsPressed };
-		inputMapping->AddCommand(static_cast<int>(GamePadInput::GAMEPAD_DPAD_LEFT), ic);
+		inputMapping->AddCommand(static_cast<unsigned int>(SDLK_a), ic);
 		ic = { &m_MoveRight, dae::InputState::IsPressed };
-		inputMapping->AddCommand(static_cast<int>(GamePadInput::GAMEPAD_DPAD_RIGHT), ic);
+		inputMapping->AddCommand(static_cast<unsigned int>(SDLK_d), ic);
 		ic = { &m_MoveUp, dae::InputState::IsPressed };
-		inputMapping->AddCommand(static_cast<int>(GamePadInput::GAMEPAD_DPAD_UP), ic);
+		inputMapping->AddCommand(static_cast<unsigned int>(SDLK_w), ic);
 		ic = { &m_MoveDown, dae::InputState::IsPressed };
-		inputMapping->AddCommand(static_cast<int>(GamePadInput::GAMEPAD_DPAD_DOWN), ic);
+		inputMapping->AddCommand(static_cast<unsigned int>(SDLK_s), ic);
+
 	}
 
-	void ControllerMovementComponent::OnMoveLeft() const
+	void KeyboardMovementComponent::OnMoveLeft() const
 	{
 		auto oldPos = GetOwner()->GetLocalPosition();
 		GetOwner()->SetLocalPosition(oldPos.x - 1 * m_moveSpeed * Time::m_DeltaTime, oldPos.y);
 	}
 
-	void ControllerMovementComponent::OnMoveRight() const
+	void KeyboardMovementComponent::OnMoveRight() const
 	{
 		auto oldPos = GetOwner()->GetLocalPosition();
 		GetOwner()->SetLocalPosition(oldPos.x + 1 * m_moveSpeed * Time::m_DeltaTime, oldPos.y);
 	}
 
-	void ControllerMovementComponent::OnMoveUp() const
+	void KeyboardMovementComponent::OnMoveUp() const
 	{
 		auto oldPos = GetOwner()->GetLocalPosition();
 		GetOwner()->SetLocalPosition(oldPos.x, oldPos.y - 1 * m_moveSpeed * Time::m_DeltaTime);
 	}
 
-	void ControllerMovementComponent::OnMoveDown() const
+	void KeyboardMovementComponent::OnMoveDown() const
 	{
 		auto oldPos = GetOwner()->GetLocalPosition();
 		GetOwner()->SetLocalPosition(oldPos.x, oldPos.y + 1 * m_moveSpeed * Time::m_DeltaTime);
 	}
-
 }
