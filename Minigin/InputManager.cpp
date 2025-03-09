@@ -147,3 +147,8 @@ dae::InputMapping* dae::InputManager::GetKeyboardInputMapping()
 {
 	return m_KeyBoardMapping.get();
 }
+
+dae::InputManager::~InputManager()
+{
+	delete GetInstance().m_Controller;
+}

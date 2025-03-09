@@ -43,5 +43,7 @@ namespace dae
 
 		InputMapping* GetControllerInputMapping();
 		InputMapping* GetKeyboardInputMapping();
+
+		~InputManager() override;
 	};
 }
