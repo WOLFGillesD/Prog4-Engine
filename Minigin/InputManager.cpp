@@ -35,41 +35,50 @@ bool dae::InputManager::ProcessInput()
 {
 	SDL_Event e;
 
-	m_Controller->ProcessInput();
-
-	if (m_ControllerMapping.get() != nullptr)
+	for (const auto & controller : m_Controllers)
 	{
-		for (const auto& map : m_ControllerMapping->GetCommands())
-		{
-			auto button = map.first;
-			auto inputCommands = map.second;
+		controller->ProcessInput();
+	}
 
-			for (const auto& inputCommand : inputCommands)
+	int controllerIndex{};
+	for (const auto& cm : m_ControllerMappings)
+	{
+		if (cm.get() != nullptr)
+		{
+			const auto& controller = m_Controllers[controllerIndex];
+			for (const auto& map : cm->GetCommands())
 			{
-				switch (inputCommand.inputState)
+				auto button = map.first;
+				auto inputCommands = map.second;
+
+				for (const auto& inputCommand : inputCommands)
 				{
-				case InputState::IsPressed:
-					if (m_Controller->IsPressed(button))
-						inputCommand.command->Execute();
-					break;
-				case InputState::IsUp:
-					if (m_Controller->IsUpThisFrame(button))
-						inputCommand.command->Execute();
-					break;
-				case InputState::IsDown:
-					if (m_Controller->IsDownThisFrame(button))
-						inputCommand.command->Execute();
-					break;
+					switch (inputCommand.inputState)
+					{
+					case InputState::IsPressed:
+						if (controller->IsPressed(button))
+							inputCommand.command->Execute();
+						break;
+					case InputState::IsUp:
+						if (controller->IsUpThisFrame(button))
+							inputCommand.command->Execute();
+						break;
+					case InputState::IsDown:
+						if (controller->IsDownThisFrame(button))
+							inputCommand.command->Execute();
+						break;
+					}
 				}
 			}
 		}
+		++controllerIndex;
 	}
 
 	while (SDL_PollEvent(&e))
 	{
 		ImGui_ImplSDL2_ProcessEvent(&e);
 
-		if (m_ControllerMapping.get() != nullptr)
+		if (m_KeyBoardMapping.get() != nullptr)
 		{
 			if (e.type == SDL_QUIT) { return false; }
 			if (e.type == SDL_KEYDOWN)
@@ -126,10 +135,16 @@ bool dae::InputManager::ProcessInput()
 	return true;
 }
 
-void dae::InputManager::SetControllerInputMapping(std::unique_ptr<InputMapping> inputMapping)
+void dae::InputManager::SetControllerInputMapping(std::unique_ptr<InputMapping> inputMapping, int controllerIndx)
 {
-	m_ControllerMapping.release();
-	m_ControllerMapping = std::move(inputMapping);
+	if (controllerIndx < m_ControllerMappings.size())
+	{
+		m_ControllerMappings[controllerIndx].release();
+		m_ControllerMappings[controllerIndx] = std::move(inputMapping);
+	}
+	else
+		m_ControllerMappings.emplace_back(std::move(inputMapping));
+
 }
 
 void dae::InputManager::SetKeyboardInputMapping(std::unique_ptr<InputMapping> inputMapping)
@@ -138,9 +153,14 @@ void dae::InputManager::SetKeyboardInputMapping(std::unique_ptr<InputMapping> in
 	m_KeyBoardMapping = std::move(inputMapping);
 }
 
-dae::InputMapping* dae::InputManager::GetControllerInputMapping()
+void dae::InputManager::RegisterGamepad(std::unique_ptr<Gamepad> gp)
 {
-	return m_ControllerMapping.get();
+	m_Controllers.emplace_back(std::move(gp));
+}
+
+dae::InputMapping* dae::InputManager::GetControllerInputMapping(int controllerIndx)
+{
+	return m_ControllerMappings[controllerIndx].get();
 }
 
 dae::InputMapping* dae::InputManager::GetKeyboardInputMapping()
@@ -148,7 +168,3 @@ dae::InputMapping* dae::InputManager::GetKeyboardInputMapping()
 	return m_KeyBoardMapping.get();
 }
 
-dae::InputManager::~InputManager()
-{
-	delete GetInstance().m_Controller;
-}

@@ -27,7 +27,9 @@ void load()
 	auto& inputManager = dae::InputManager::GetInstance();
 
 	auto imc = std::make_unique<dae::InputMapping>();
-	auto imk = std::make_unique<dae::InputMapping>();
+	auto imc2 = std::make_unique<dae::InputMapping>();
+
+	//auto imk = std::make_unique<dae::InputMapping>();
 
 	auto go = std::make_shared<dae::GameObject>();
 	go->AddComponent<dae::TextureComponent>("background.tga");
@@ -54,21 +56,25 @@ void load()
 	go->SetLocalPosition(500, 350);
 
 	go = std::make_shared<dae::GameObject>();
-	go->AddComponent<dae::TextureComponent>("CEMERALD.tga");
+	go->AddComponent<dae::TextureComponent>("VRHOB1.png");
 	go->SetLocalPosition(500, 350);
 
+	imc2->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_UP), dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(0,-1)) });
+	imc2->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_DOWN), dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(0,1)) });
+	imc2->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_LEFT), dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(-1,0)) });
+	imc2->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_RIGHT), dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(1,0)) });
 
-	imk->AddCommand(SDLK_w, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(0,-1)) });
-	imk->AddCommand(SDLK_z, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(0,-1)) });
-	imk->AddCommand(SDLK_s, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(0,1)) });
-	imk->AddCommand(SDLK_q, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(-1,0)) });
-	imk->AddCommand(SDLK_a, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(-1,0)) });
-	imk->AddCommand(SDLK_d, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(1,0)) });
+	//imk->AddCommand(SDLK_w, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(0,-1)) });
+	//imk->AddCommand(SDLK_z, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(0,-1)) });
+	//imk->AddCommand(SDLK_s, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(0,1)) });
+	//imk->AddCommand(SDLK_q, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(-1,0)) });
+	//imk->AddCommand(SDLK_a, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(-1,0)) });
+	//imk->AddCommand(SDLK_d, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(1,0)) });
 
 	scene.Add(go);
 
 	go = std::make_shared<dae::GameObject>();
-	go->AddComponent<dae::TextureComponent>("CEMERALD.tga");
+	go->AddComponent<dae::TextureComponent>("VNOBD.png");
 	go->SetLocalPosition(400, 350);
 
 	scene.Add(go);
@@ -78,9 +84,15 @@ void load()
 	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_LEFT), dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(-1,0)) });
 	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_RIGHT), dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(1,0)) });
 
+	auto gp = std::make_unique<XInputGamepad>(0);
+	auto gp2 = std::make_unique<XInputGamepad>(1);
 
-	inputManager.SetControllerInputMapping(std::move(imc));
-	inputManager.SetKeyboardInputMapping(std::move(imk));
+	inputManager.RegisterGamepad(std::move(gp));
+	inputManager.RegisterGamepad(std::move(gp2));
+
+	inputManager.SetControllerInputMapping(std::move(imc), 0);
+	inputManager.SetControllerInputMapping(std::move(imc2), 1);
+	//inputManager.SetKeyboardInputMapping(std::move(imk));
 }
 
 int main(int, char*[]) {

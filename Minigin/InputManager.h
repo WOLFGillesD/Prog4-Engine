@@ -32,18 +32,19 @@ namespace dae
 
 	class InputManager final : public Singleton<InputManager>
 	{
-		Gamepad* m_Controller{ new XInputGamepad(0) };
-		std::unique_ptr<InputMapping> m_ControllerMapping;
+		std::vector<std::unique_ptr<Gamepad>> m_Controllers{};
+		std::vector<std::unique_ptr<InputMapping>> m_ControllerMappings;
 		std::unique_ptr<InputMapping> m_KeyBoardMapping;
 	public:
 		bool ProcessInput();
 
-		void SetControllerInputMapping(std::unique_ptr<InputMapping> inputMapping);
+		void SetControllerInputMapping(std::unique_ptr<InputMapping> inputMapping, int controllerIndx);
 		void SetKeyboardInputMapping(std::unique_ptr<InputMapping> inputMapping);
 
-		InputMapping* GetControllerInputMapping();
-		InputMapping* GetKeyboardInputMapping();
+		void RegisterGamepad(std::unique_ptr<Gamepad> gp);
+		//void UnRegisterGamepad(int index);
 
-		~InputManager() override;
+		InputMapping* GetControllerInputMapping(int controllerIndx);
+		InputMapping* GetKeyboardInputMapping();
 	};
 }
