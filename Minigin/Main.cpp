@@ -19,8 +19,6 @@
 #include "Components/RotatorComponent.h"
 #include "Components/TextComponent.h"
 #include "Components/TextureComponent.h"
-#include "Components/ControllerMovementComponent.h"
-#include "Components/KeyboardMovementComponent.h"
 namespace fs = std::filesystem;
 
 void load()
@@ -30,9 +28,6 @@ void load()
 
 	auto imc = std::make_unique<dae::InputMapping>();
 	auto imk = std::make_unique<dae::InputMapping>();
-	inputManager.SetControllerInputMapping(std::move(imc));
-	inputManager.SetKeyboardInputMapping(std::move(imk));
-
 
 	auto go = std::make_shared<dae::GameObject>();
 	go->AddComponent<dae::TextureComponent>("background.tga");
@@ -60,17 +55,32 @@ void load()
 
 	go = std::make_shared<dae::GameObject>();
 	go->AddComponent<dae::TextureComponent>("CEMERALD.tga");
-	go->AddComponent<dae::KeyboardMovementComponent>();
 	go->SetLocalPosition(500, 350);
+
+
+	imk->AddCommand(SDLK_w, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(0,-1)) });
+	imk->AddCommand(SDLK_z, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(0,-1)) });
+	imk->AddCommand(SDLK_s, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(0,1)) });
+	imk->AddCommand(SDLK_q, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(-1,0)) });
+	imk->AddCommand(SDLK_a, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(-1,0)) });
+	imk->AddCommand(SDLK_d, dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(1,0)) });
 
 	scene.Add(go);
 
 	go = std::make_shared<dae::GameObject>();
 	go->AddComponent<dae::TextureComponent>("CEMERALD.tga");
-	go->AddComponent<dae::ControllerMovementComponent>();
 	go->SetLocalPosition(400, 350);
 
 	scene.Add(go);
+
+	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_UP), dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(0,-1)) });
+	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_DOWN), dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(0,1)) });
+	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_LEFT), dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(-1,0)) });
+	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_RIGHT), dae::InputCommand{ new MoveCommand(*go.get(), glm::vec2(1,0)) });
+
+
+	inputManager.SetControllerInputMapping(std::move(imc));
+	inputManager.SetKeyboardInputMapping(std::move(imk));
 }
 
 int main(int, char*[]) {
