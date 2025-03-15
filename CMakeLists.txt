@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
-project(Minigin)
+project(Prog4-Engine)
 
 include(FetchContent)
 
@@ -11,7 +11,7 @@ if(EMSCRIPTEN)
   set(TARGET_NAME minigin_web)
   set(TARGET_PARAM )
 else()
-  set(TARGET_NAME minigin)
+  set(TARGET_NAME Prog4-Engine)
   set(TARGET_PARAM WIN32)
 endif()
 
@@ -89,7 +89,12 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     "Minigin/Input/XInputGamepad.h"
     "Minigin/Input/Gamepad.cpp" 
     "Minigin/Input/Gamepad.h"
-    ${IMGUI_SRC} ${IMPLOT_SRC}  )
+    "Minigin/Components/HealthComponent.h" 
+    "Minigin/Components/HealthComponent.cpp"
+    "Minigin/Input/Observer.h" 
+    "Minigin/Input/Observer.cpp"
+    "Minigin/Input/EventManager.h"
+    ${IMGUI_SRC} ${IMPLOT_SRC}  "Minigin/Components/ScoreComponent.h" "Minigin/Components/ScoreComponent.cpp")
 
 target_include_directories(${TARGET_NAME} PRIVATE ${implot_SOURCE_DIR} ${imgui_SOURCE_DIR})
 

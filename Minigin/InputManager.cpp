@@ -45,6 +45,7 @@ bool dae::InputManager::ProcessInput()
 	{
 		if (cm.get() != nullptr)
 		{
+			if (controllerIndex >= m_Controllers.size()) continue;
 			const auto& controller = m_Controllers[controllerIndex];
 			for (const auto& map : cm->GetCommands())
 			{
@@ -139,7 +140,7 @@ void dae::InputManager::SetControllerInputMapping(std::unique_ptr<InputMapping> 
 {
 	if (controllerIndx < m_ControllerMappings.size())
 	{
-		m_ControllerMappings[controllerIndx].release();
+		m_ControllerMappings[controllerIndx].reset();
 		m_ControllerMappings[controllerIndx] = std::move(inputMapping);
 	}
 	else
@@ -149,7 +150,7 @@ void dae::InputManager::SetControllerInputMapping(std::unique_ptr<InputMapping> 
 
 void dae::InputManager::SetKeyboardInputMapping(std::unique_ptr<InputMapping> inputMapping)
 {
-	m_KeyBoardMapping.release();
+	m_KeyBoardMapping.reset();
 	m_KeyBoardMapping = std::move(inputMapping);
 }
 
