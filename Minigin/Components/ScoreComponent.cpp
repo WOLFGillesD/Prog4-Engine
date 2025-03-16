@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include "Achievement.h"
+
 dae::ScoreComponent::ScoreComponent(dae::GameObject& go)
 	: Component(go)
 {
@@ -39,6 +41,13 @@ dae::ScoreObserver::ScoreObserver(TextComponent* txtComponent)
 void dae::ScoreObserver::OnTrigger(GameObject* actor)
 {
 	m_TextIndicator->SetText("Score: " + std::to_string(actor->GetComponent<ScoreComponent>()->GetScore()));
+}
+
+void dae::ScoreAchievement::OnTrigger(GameObject* actor)
+{
+	if (actor->GetComponent<ScoreComponent>()->GetScore() >= 500)
+		if (dae::AchievementGlobals::g_SteamAchievements)
+			dae::AchievementGlobals::g_SteamAchievements->SetAchievement("ACH_WIN_ONE_GAME");
 }
 
 dae::UpScoreCommand::UpScoreCommand(ScoreComponent* sc, int scoreIncrease)

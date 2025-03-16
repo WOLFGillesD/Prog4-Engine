@@ -31,6 +31,17 @@ void dae::InputMapping::ClearCommandsForButton(unsigned int button)
 	m_Commands.erase(button);
 }
 
+dae::InputMapping::~InputMapping()
+{
+	for (const auto & inputCommands : m_Commands)
+	{
+		for (const auto& com : inputCommands.second)
+		{
+			delete com.command;
+		}
+	}
+}
+
 bool dae::InputManager::ProcessInput()
 {
 	SDL_Event e;

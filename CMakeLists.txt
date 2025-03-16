@@ -44,6 +44,9 @@ set(IMPLOT_SRC
     "${implot_SOURCE_DIR}/implot.cpp"
     "${implot_SOURCE_DIR}/implot_items.cpp")
 
+set(STEAM_SDK_DIR "${CMAKE_SOURCE_DIR}/External/steamworks")
+set(STEAM_APPID_FILE "${CMAKE_SOURCE_DIR}/External/steam_appid.txt")
+
 # list source files here
 add_executable(${TARGET_NAME} ${TARGET_PARAM}
     "Minigin/Font.cpp"
@@ -94,9 +97,13 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     "Minigin/Input/Observer.h" 
     "Minigin/Input/Observer.cpp"
     "Minigin/Input/EventManager.h"
-    ${IMGUI_SRC} ${IMPLOT_SRC}  "Minigin/Components/ScoreComponent.h" "Minigin/Components/ScoreComponent.cpp")
+    ${IMGUI_SRC} ${IMPLOT_SRC}  "Minigin/Components/ScoreComponent.h" "Minigin/Components/ScoreComponent.cpp" "Minigin/Achievement.h" "Minigin/Achievement.cpp")
 
-target_include_directories(${TARGET_NAME} PRIVATE ${implot_SOURCE_DIR} ${imgui_SOURCE_DIR})
+target_include_directories( ${TARGET_NAME} PRIVATE 
+                            ${implot_SOURCE_DIR} 
+                            ${imgui_SOURCE_DIR} 
+                            ${STEAM_SDK_DIR}/public 
+                            ${STEAM_SDK_DIR}/public/steam)
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
@@ -118,6 +125,11 @@ endif()
 
 # add SDL2
 if (WIN32)
+    add_library(steamworks STATIC IMPORTED)
+    set_target_properties(steamworks PROPERTIES
+        IMPORTED_LOCATION "${STEAM_SDK_DIR}/redistributable_bin/win64/steam_api64.lib"
+    )
+    set(STEAM_DLL "${STEAM_SDK_DIR}/redistributable_bin/win64/steam_api64.dll")
   FetchContent_Declare(
     SDL2
     URL https://www.libsdl.org/release/SDL2-devel-2.30.10-VC.zip 
@@ -193,6 +205,7 @@ if (WIN32)
     ${SDL2_TTF_LIBRARIES} 
     ${VLD_LIBRARY}
     XInput
+    steamworks
   )
 
 elseif(NOT EMSCRIPTEN)
@@ -281,5 +294,13 @@ elseif(WIN32)
   )
   add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Data" "$<TARGET_FILE_DIR:${TARGET_NAME}>/Data"
+  )
+  add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${STEAM_DLL} "$<TARGET_FILE_DIR:${TARGET_NAME}>"
+  )
+  add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${STEAM_APPID_FILE} "$<TARGET_FILE_DIR:${TARGET_NAME}>"
   )
 endif()

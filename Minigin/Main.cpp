@@ -13,7 +13,11 @@
 #include "Scene.h"
 
 #include <filesystem>
+#include <iostream>
 
+#include <steam_api.h>
+
+#include "Achievement.h"
 #include "InputManager.h"
 #include "Input/EventManager.h"
 #include "Components/FpsComponent.h"
@@ -40,6 +44,7 @@ void load()
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 	auto font2 = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 15);
 
+	auto achievementObserver = std::make_unique<dae::ScoreAchievement>();
 
 
 	auto go = std::make_shared<dae::GameObject>();
@@ -102,6 +107,8 @@ void load()
 	txtComp->SetText("Score: " + std::to_string(scoreComponent->GetScore()));
 
 	scoreComponent->OnScoreChanged()->AddObserver(scoreObserver.get());
+	scoreComponent->OnScoreChanged()->AddObserver(achievementObserver.get());
+
 	eventManager.AddObserver(std::move(scoreObserver));
 	scene.Add(go2);
 
@@ -159,7 +166,11 @@ void load()
 	txtComp->SetText("Score: " + std::to_string(scoreComponent->GetScore()));
 
 	scoreComponent->OnScoreChanged()->AddObserver(scoreObserver.get());
+	scoreComponent->OnScoreChanged()->AddObserver(achievementObserver.get());
+
 	eventManager.AddObserver(std::move(scoreObserver));
+	eventManager.AddObserver(std::move(achievementObserver));
+
 	scene.Add(go2);
 
 
@@ -191,7 +202,20 @@ int main(int, char*[]) {
 	if(!fs::exists(data_location))
 		data_location = "../Data/";
 #endif
+	if (!SteamAPI_Init())
+	{
+		std::cerr << "Fatal Error - Steam must be running to play this game (SteamAPI_Init() failed)." << std::endl;
+		return 1;
+	}
+	else
+		std::cout << "Successfully initialized steam." << std::endl;
+
+	dae::AchievementGlobals::g_SteamAchievements = new dae::CSteamAchievements(dae::g_Achievements, 4);
+
 	dae::Minigin engine(data_location);
 	engine.Run(load);
+
+	SteamAPI_Shutdown();
+	delete dae::AchievementGlobals::g_SteamAchievements;
     return 0;
 }

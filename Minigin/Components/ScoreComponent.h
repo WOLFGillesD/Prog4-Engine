@@ -32,6 +32,13 @@ namespace dae
 		void OnTrigger(GameObject* actor) override;
 	};
 
+	class ScoreAchievement : public Observer
+	{
+	public:
+		ScoreAchievement() = default;
+		void OnTrigger(GameObject* actor) override;
+	};
+
 	class UpScoreCommand : public Command
 	{
 		ScoreComponent* m_sc;

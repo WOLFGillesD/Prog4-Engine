@@ -23,6 +23,7 @@
 #include <imgui.h>
 
 #include "ImGuiRenderer.h"
+#include "steam_api_common.h"
 
 
 SDL_Window* g_window{};
@@ -122,6 +123,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	while (!m_quit)
 	{
 		RunOneFrame();
+		SteamAPI_RunCallbacks();
 	}
 	sceneManager.End();
 #else
