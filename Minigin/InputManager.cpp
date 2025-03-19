@@ -28,6 +28,10 @@ void dae::InputMapping::AddCommand(unsigned int button, InputCommand command)
 
 void dae::InputMapping::ClearCommandsForButton(unsigned int button)
 {
+	for (const auto& com : m_Commands[button])
+	{
+		delete com.command;
+	}
 	m_Commands.erase(button);
 }
 
