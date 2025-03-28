@@ -28,6 +28,8 @@ namespace dae
 		std::unordered_map<unsigned int, std::vector<InputCommand>> GetCommands();
 		void AddCommand(unsigned int button, InputCommand command);
 		void ClearCommandsForButton(unsigned int button);
+
+		~InputMapping();
 	};
 
 	class InputManager final : public Singleton<InputManager>
