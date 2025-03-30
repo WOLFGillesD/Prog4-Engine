@@ -76,10 +76,6 @@ add_library(${TARGET_NAME} STATIC
     "Minigin/Components/TextureComponent.h" 
     "Minigin/DaeTime.cpp"
     "Minigin/DaeTime.h" 
-    "Minigin/Components/RotatorComponent.cpp"
-    "Minigin/Components/RotatorComponent.h"
-    "Minigin/Components/ThrashAndCacheComponent.cpp"
-    "Minigin/Components/ThrashAndCacheComponent.h"
     "Minigin/ImGuiRenderer.cpp" 
     "Minigin/ImGuiRenderer.h"
     "Minigin/Input/Command.cpp" 
@@ -88,14 +84,17 @@ add_library(${TARGET_NAME} STATIC
     "Minigin/Input/XInputGamepad.h"
     "Minigin/Input/Gamepad.cpp" 
     "Minigin/Input/Gamepad.h"
-    "Minigin/Components/HealthComponent.h" 
-    "Minigin/Components/HealthComponent.cpp"
     "Minigin/Input/Observer.h" 
     "Minigin/Input/Observer.cpp"
     "Minigin/Input/EventManager.h"
-    ${IMGUI_SRC} ${IMPLOT_SRC}  "Minigin/Components/ScoreComponent.h" "Minigin/Components/ScoreComponent.cpp")
+    ${IMGUI_SRC} ${IMPLOT_SRC})
 
-target_include_directories(${TARGET_NAME} PUBLIC ${implot_SOURCE_DIR} ${imgui_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/Minigin ${CMAKE_CURRENT_SOURCE_DIR}/Minigin/Input ${CMAKE_CURRENT_SOURCE_DIR}/Minigin/Components ${CMAKE_CURRENT_SOURCE_DIR}/Minigin/Components)
+target_include_directories(${TARGET_NAME} PUBLIC 
+    ${implot_SOURCE_DIR} 
+    ${imgui_SOURCE_DIR} 
+    ${CMAKE_CURRENT_SOURCE_DIR}/Minigin 
+    ${CMAKE_CURRENT_SOURCE_DIR}/Minigin/Input 
+    ${CMAKE_CURRENT_SOURCE_DIR}/Minigin/Components)
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
