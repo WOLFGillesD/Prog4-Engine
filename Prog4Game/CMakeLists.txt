@@ -18,6 +18,10 @@ endif()
 # list source files here
 add_executable(${TARGET_NAME} ${TARGET_PARAM}
     "src/Main.cpp"
+    "src/Components/HealthComponent.cpp"
+    "src/Components/RotatorComponent.cpp"
+    "src/Components/ScoreComponent.cpp"
+    "src/Components/ThrashAndCacheComponent.cpp"
     ${IMGUI_SRC} ${IMPLOT_SRC})
 
 target_include_directories(${TARGET_NAME} PRIVATE ${implot_SOURCE_DIR} ${imgui_SOURCE_DIR})
