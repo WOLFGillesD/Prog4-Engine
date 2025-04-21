@@ -29,23 +29,11 @@ SDL_Window* g_window{};
 
 void LogSDLVersion(const std::string& message, const SDL_version& v)
 {
-#if WIN32
 	std::stringstream ss;
 	ss << message << (int)v.major << "." << (int)v.minor << "." << (int)v.patch << "\n";
 	OutputDebugString(ss.str().c_str());
-#else
-	std::cout << message << (int)v.major << "." << (int)v.minor << "." << (int)v.patch << "\n";
-#endif
 }
 
-#ifdef __EMSCRIPTEN__
-#include "emscripten.h"
-
-void LoopCallback(void* arg)
-{
-	static_cast<dae::Minigin*>(arg)->RunOneFrame();
-}
-#endif
 
 // Why bother with this? Because sometimes students have a different SDL version installed on their pc.
 // That is not a problem unless for some reason the dll's from this project are not copied next to the exe.
@@ -76,7 +64,7 @@ dae::Minigin::Minigin(const std::filesystem::path &dataPath)
 {
 	PrintSDLVersion();
 	
-	if (SDL_Init(SDL_INIT_VIDEO) != 0) 
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) 
 	{
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 	}
@@ -112,7 +100,6 @@ dae::Minigin::~Minigin()
 void dae::Minigin::Run(const std::function<void()>& load)
 {
 	load();
-#ifndef __EMSCRIPTEN__
 	auto& sceneManager = SceneManager::GetInstance();
 
 	Time::m_FixedTimeStep = m_FixedTimeStep;
@@ -124,9 +111,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		RunOneFrame();
 	}
 	sceneManager.End();
-#else
-	emscripten_set_main_loop_arg(&LoopCallback, this, 0, true);
-#endif
+
 }
 
 void dae::Minigin::RunOneFrame()

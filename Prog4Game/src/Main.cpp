@@ -15,6 +15,7 @@
 #include <filesystem>
 
 #include "InputManager.h"
+#include "Audio/Servicelocator.h"
 #include "Input/EventManager.h"
 #include "Components/FpsComponent.h"
 #include "Components/HealthComponent.h"
@@ -41,7 +42,14 @@ void load()
 	auto font2 = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 15);
 
 
+	// AUDIO
+	dae::Servicelocator::RegisterSoundSystem(std::make_unique<dae::SDLSoundSystem>());
+	auto songID = dae::Servicelocator::GetSoundSystem().LoadSound("Data/Audio/Popcorn_Remix_for_Digger.mp3");
+	dae::Servicelocator::GetSoundSystem().Play(songID);
+	auto deathID = dae::Servicelocator::GetSoundSystem().LoadSound("Data/Audio/DeathSound.mp3");
 
+
+	// GameObjects
 	auto go = std::make_shared<dae::GameObject>();
 	go->AddComponent<dae::TextureComponent>("background.tga");
 	scene.Add(go);
@@ -77,7 +85,7 @@ void load()
 	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_A), dae::InputCommand{ new dae::UpScoreCommand(scoreComponent, 20), dae::InputState::IsUp });
 	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_B), dae::InputCommand{ new dae::UpScoreCommand(scoreComponent, 100), dae::InputState::IsUp });
 
-
+	
 
 	auto go2 = std::make_shared<dae::GameObject>();
 	go2->AddComponent<dae::TextComponent>("AAA", font2);
@@ -124,6 +132,13 @@ void load()
 	go->SetLocalPosition(400, 350);
 
 	healthComponent = go->GetComponent<dae::HealthComponent>();
+
+	auto soundObserver = std::make_unique<dae::SoundObserver>(deathID);
+
+	healthComponent->GetOnDeathEvent()->AddObserver(soundObserver.get());
+	eventManager.AddObserver(std::move(soundObserver));
+
+
 	scoreComponent = go->GetComponent<dae::ScoreComponent>();
 	imk->AddCommand(SDLK_c, dae::InputCommand{ new dae::DieCommand(healthComponent), dae::InputState::IsDown });
 	imk->AddCommand(SDLK_z, dae::InputCommand{ new dae::UpScoreCommand(scoreComponent, 20), dae::InputState::IsUp });
@@ -183,14 +198,11 @@ void load()
 	inputManager.SetKeyboardInputMapping(std::move(imk));
 }
 
-int main(int, char*[]) {
-#if __EMSCRIPTEN__
-	fs::path data_location = "";
-#else
+int main(int, char*[])
+{
 	fs::path data_location = "./Data/";
 	if(!fs::exists(data_location))
 		data_location = "../Data/";
-#endif
 	dae::Minigin engine(data_location);
 	engine.Run(load);
     return 0;
