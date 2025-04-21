@@ -3,26 +3,23 @@ project(Prog4-Game)
 
 include(FetchContent)
 
-if(EMSCRIPTEN)
-  message("Using Emscripten!")
-endif()
 
-if(EMSCRIPTEN)
-  set(TARGET_NAME minigin_web)
-  set(TARGET_PARAM )
-else()
-  set(TARGET_NAME Prog4-Game)
-  set(TARGET_PARAM WIN32)
-endif()
+set(TARGET_NAME Prog4-Game)
+set(TARGET_PARAM WIN32)
 
-# list source files here
-add_executable(${TARGET_NAME} ${TARGET_PARAM}
+set(GAME_SOURCE     
     "src/Main.cpp"
     "src/Components/HealthComponent.cpp"
     "src/Components/RotatorComponent.cpp"
     "src/Components/ScoreComponent.cpp"
-    "src/Components/ThrashAndCacheComponent.cpp"
-    ${IMGUI_SRC} ${IMPLOT_SRC})
+)
+
+# list source files here
+add_executable(
+    ${TARGET_NAME} 
+    ${TARGET_PARAM}
+    ${GAME_SOURCE}
+    )
 
 target_include_directories(${TARGET_NAME} PRIVATE ${implot_SOURCE_DIR} ${imgui_SOURCE_DIR})
 

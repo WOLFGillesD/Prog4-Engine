@@ -60,15 +60,11 @@ set(ENGINE_SOURCE
     "Minigin/Components/TextComponent.cpp"
     "Minigin/Components/TextureComponent.cpp" 
     "Minigin/DaeTime.cpp"
-    "Minigin/Components/RotatorComponent.cpp"
-    "Minigin/Components/ThrashAndCacheComponent.cpp"
     "Minigin/ImGuiRenderer.cpp" 
     "Minigin/Input/Command.cpp" 
     "Minigin/Input/XInputGamepad.cpp"
     "Minigin/Input/Gamepad.cpp" 
-    "Minigin/Components/HealthComponent.cpp"
     "Minigin/Input/Observer.cpp"
-    "Minigin/Components/ScoreComponent.cpp" 
     "Minigin/Audio/Servicelocator.cpp"
     "Minigin/Audio/Soundsystem.cpp")
 

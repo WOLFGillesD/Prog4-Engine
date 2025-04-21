@@ -135,7 +135,7 @@ void load()
 
 	auto soundObserver = std::make_unique<dae::SoundObserver>(deathID);
 
-	healthComponent->GetOnDeathEvent()->AddObserver(soundObserver.get());
+	healthComponent->GetOnDieEvent()->AddObserver(soundObserver.get());
 	eventManager.AddObserver(std::move(soundObserver));
 
 
