@@ -24,11 +24,6 @@ namespace dae
 		SDLSoundSystem();
 		~SDLSoundSystem() override;
 
-		SDLSoundSystem(const SDLSoundSystem& other) = delete;
-		SDLSoundSystem(SDLSoundSystem&& other) noexcept = delete;
-		SDLSoundSystem& operator=(const SDLSoundSystem& other) = delete;
-		SDLSoundSystem& operator=(SDLSoundSystem&& other) noexcept = delete;
-
 		SoundID LoadSound(const std::string& path) override;
 
 		void Play(SoundID soundID) override;

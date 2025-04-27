@@ -18,12 +18,6 @@ namespace dae
 	public:
 		SDLSoundSystemImpl()
 		{
-			// Initialize SDL audio subsystem
-			//if (SDL_Init(SDL_INIT_AUDIO) < 0)
-			//{
-			//	throw std::runtime_error("Failed to initialize SDL audio");
-			//}
-
 			if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) 
 			{
 				throw std::runtime_error(Mix_GetError());
@@ -42,33 +36,33 @@ namespace dae
 			}
 			m_Sounds.clear();
 			m_IsRunning = false;
+			m_CkeckForWork.notify_one();
 
 			m_AudioThread.request_stop();
 			m_AudioThread.join();
 		}
 
+		SDLSoundSystemImpl(SDLSoundSystemImpl&) = delete;
+		SDLSoundSystemImpl(SDLSoundSystemImpl&&) = delete;
+		SDLSoundSystemImpl& operator=(SDLSoundSystemImpl&) = delete;
+		SDLSoundSystemImpl& operator=(SDLSoundSystemImpl&&) = delete;
+
 		SoundID LoadSound(const std::string& path) override
 		{
 			// Load sound file
-			Mix_Chunk* sound = Mix_LoadWAV(path.c_str());
-			if (!sound)
-			{
-				throw std::runtime_error(Mix_GetError());
-			}
-			m_Sounds.push_back(sound);
-			return static_cast<SoundID>(m_Sounds.size() - 1);
+			std::lock_guard lock{ m_AudioMutex };
+			std::string test = path;
+			m_LoadQueue.push(test);
+			m_CkeckForWork.notify_one();
+			return m_registerdSounds++;
+
 		}
 
 		void Play(SoundID soundID) override
 		{
-			if (soundID < m_Sounds.size())
-			{
-				Mix_PlayChannel(-1, m_Sounds[soundID], 0);
-			}
-			else
-			{
-				throw std::out_of_range("Invalid sound ID");
-			}
+			std::lock_guard lock{ m_AudioMutex };
+			m_CkeckForWork.notify_one();
+			m_SoundQueue.push(soundID);
 		}
 
 	private:
@@ -78,34 +72,50 @@ namespace dae
 			while (m_IsRunning)
 			{
 				std::unique_lock<std::mutex> lock(m_AudioMutex);
-				if (!m_SoundQueue.empty())
+				while(!m_LoadQueue.empty())
+				{
+					std::string path = m_LoadQueue.front();
+					m_LoadQueue.pop();
+
+					Mix_Chunk* sound = Mix_LoadWAV(path.c_str());
+					if (!sound)
+					{
+						throw std::runtime_error(Mix_GetError());
+					}
+					m_Sounds.push_back(sound);
+				}
+
+				while(!m_SoundQueue.empty())
 				{
 					SoundID soundID = m_SoundQueue.front();
 					m_SoundQueue.pop();
-					lock.unlock();
 
 					if (soundID < m_Sounds.size())
 					{
-						Mix_PlayChannel(-1, m_Sounds[soundID], -1);
+						Mix_PlayChannel(-1, m_Sounds[soundID], 0);
+					}
+					else
+					{
+						m_SoundQueue.push(soundID);
+						std::this_thread::sleep_for(std::chrono::milliseconds(1));
 					}
 
-					// SDL_QueueAudio(...);
 				}
-				else
-				{
-					lock.unlock();
-					std::this_thread::sleep_for(std::chrono::milliseconds(10));
-				}
+				m_CkeckForWork.wait(lock,[&]{ return !m_LoadQueue.empty() || !m_SoundQueue.empty() || !m_IsRunning; });
 			}
 		}
 
 		bool m_IsRunning{ true };
+		std::condition_variable m_CkeckForWork;
 
 		std::jthread m_AudioThread;
 		std::mutex m_AudioMutex;
 
-		std::queue<SoundID> m_SoundQueue;
-		std::vector<Mix_Chunk*> m_Sounds;
+		std::queue<std::string> m_LoadQueue{};
+		std::queue<SoundID> m_SoundQueue{};
+		std::vector<Mix_Chunk*> m_Sounds{};
+
+		SoundID m_registerdSounds{};
 
 	};
 

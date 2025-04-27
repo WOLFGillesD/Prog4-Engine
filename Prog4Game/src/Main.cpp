@@ -100,6 +100,11 @@ void load()
 	txtComp->SetText("# Lives: " + std::to_string(healthComponent->GetLives()));
 
 	healthComponent->GetOnDieEvent()->AddObserver(healthObserver.get());
+	auto soundObserver = std::make_unique<dae::SoundObserver>(deathID);
+
+	healthComponent->GetOnDieEvent()->AddObserver(soundObserver.get());
+	eventManager.AddObserver(std::move(soundObserver));
+
 	eventManager.AddObserver(std::move(healthObserver));
 
 	scene.Add(go2);
@@ -137,7 +142,7 @@ void load()
 
 	healthComponent = go->GetComponent<dae::HealthComponent>();
 
-	auto soundObserver = std::make_unique<dae::SoundObserver>(deathID);
+	soundObserver = std::make_unique<dae::SoundObserver>(deathID);
 
 	healthComponent->GetOnDieEvent()->AddObserver(soundObserver.get());
 	eventManager.AddObserver(std::move(soundObserver));
