@@ -8,6 +8,9 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
+
 namespace dae
 {
 	class SDLSoundSystem::SDLSoundSystemImpl : public SoundSystem
@@ -122,6 +125,61 @@ namespace dae
 	}
 
 	void SDLSoundSystem::Play(SoundID soundID)
+	{
+		m_pImpl->Play(soundID);
+	}
+
+
+	// =============================================
+	// LOGGER
+	// =============================================
+	class SoundSystemLogger::SoundSystemLoggerImpl : public SoundSystem
+	{
+		std::shared_ptr<spdlog::logger> m_fileLogger;
+		int m_loadRequests{};
+
+	public:
+		SoundSystemLoggerImpl()
+		{
+			 m_fileLogger = spdlog::basic_logger_mt("file_logger", "logs/my_log.txt");
+		}
+
+		SoundID LoadSound(const std::string& filename) override
+		{
+			std::stringstream ss{};
+			ss << "User played audio: " << filename;
+
+			spdlog::info(ss.str());
+			m_fileLogger->info(ss.str());
+			return m_loadRequests++;
+		}
+
+		void Play(SoundID soundID) override
+		{
+			std::stringstream ss{};
+			ss << "User requesting to play sound: " << soundID;
+
+			spdlog::info(ss.str());
+			m_fileLogger->info(ss.str());
+		}
+	};
+
+	SoundSystemLogger::SoundSystemLogger()
+	{
+		m_pImpl = new SoundSystemLoggerImpl{};
+	}
+
+	SoundSystemLogger::~SoundSystemLogger()
+	{
+		delete m_pImpl;
+	}
+
+	SoundID SoundSystemLogger::LoadSound(const std::string& path)
+	{
+		return m_pImpl->LoadSound(path);
+	}
+
+	void SoundSystemLogger::Play(SoundID soundID)
 	{
 		m_pImpl->Play(soundID);
 	}

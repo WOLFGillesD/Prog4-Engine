@@ -24,8 +24,30 @@ namespace dae
 		SDLSoundSystem();
 		~SDLSoundSystem() override;
 
+		SDLSoundSystem(const SDLSoundSystem& other) = delete;
+		SDLSoundSystem(SDLSoundSystem&& other) noexcept = delete;
+		SDLSoundSystem& operator=(const SDLSoundSystem& other) = delete;
+		SDLSoundSystem& operator=(SDLSoundSystem&& other) noexcept = delete;
+
 		SoundID LoadSound(const std::string& path) override;
 
+		void Play(SoundID soundID) override;
+	};
+
+	class SoundSystemLogger final : public SoundSystem
+	{
+		class SoundSystemLoggerImpl;
+		SoundSystemLoggerImpl* m_pImpl;
+	public:
+		SoundSystemLogger();
+		~SoundSystemLogger() override;
+
+		SoundSystemLogger(const SoundSystemLogger& other) = delete;
+		SoundSystemLogger(SoundSystemLogger&& other) noexcept = delete;
+		SoundSystemLogger& operator=(const SoundSystemLogger& other) = delete;
+		SoundSystemLogger& operator=(SoundSystemLogger&& other) noexcept = delete;
+
+		SoundID LoadSound(const std::string& path) override;
 		void Play(SoundID soundID) override;
 	};
 }

@@ -43,6 +43,10 @@ void load()
 
 
 	// AUDIO
+
+	// ----- Sound Service logger
+	//dae::Servicelocator::RegisterSoundSystem(std::make_unique<dae::SoundSystemLogger>());
+
 	dae::Servicelocator::RegisterSoundSystem(std::make_unique<dae::SDLSoundSystem>());
 	auto songID = dae::Servicelocator::GetSoundSystem().LoadSound("Data/Audio/Popcorn_Remix_for_Digger.mp3");
 	dae::Servicelocator::GetSoundSystem().Play(songID);

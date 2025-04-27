@@ -31,6 +31,19 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(ImPlot)
 
+FetchContent_Declare(
+  spdlog
+  GIT_REPOSITORY https://github.com/gabime/spdlog.git
+  GIT_TAG v1.13.0 # <-- or whatever version you prefer
+  GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(spdlog)
+set(SPDLOG_INCLUDE_DIR ${spdlog_SOURCE_DIR}/include)
+
+# Need to add this to avoid deprecation warnings
+add_compile_definitions(_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
+
+
 set(IMGUI_SRC
     "${imgui_SOURCE_DIR}/imgui.cpp"
     "${imgui_SOURCE_DIR}/imgui_draw.cpp"
@@ -180,6 +193,10 @@ endif()
       endif()
   endif()
 
+
+  # add logger
+
+
   find_package(VLD CONFIG)
 
 # set all include directories
@@ -189,6 +206,7 @@ target_include_directories(${TARGET_NAME} PUBLIC
     ${SDL2_IMAGE_INCLUDE_DIR} 
     ${SDL2_TTF_INCLUDE_DIR}
     ${SDL2_MIXER_INCLUDE_DIR}
+    ${SPDLOG_INCLUDE_DIR}
 )
   
 # set libraries to link with
@@ -199,6 +217,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC
     ${SDL2_MIXER_LIBRARIES}
     ${VLD_LIBRARY}
     XInput
+    spdlog::spdlog
 )
 
 target_include_directories(${TARGET_NAME} PRIVATE
