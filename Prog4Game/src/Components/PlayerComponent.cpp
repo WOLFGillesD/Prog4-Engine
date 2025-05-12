@@ -8,7 +8,7 @@ namespace game
 	{
 		const auto cell = player.GetCell();
 		const glm::vec2 center = player.GetGrid()->GetCellCenter(cell.x, cell.y);
-		player.SetPos(center);
+		player.GetOwner()->SetLocalPosition(center.x, center.y);
 	}
 
 	void IdleState::Update()
@@ -31,7 +31,7 @@ namespace game
 
 	void PlayerComponent::Update()
 	{
-		currentState->Update();
+		//currentState->Update();
 	}
 
 	MoveCommand::MoveCommand(PlayerComponent* pActor, const glm::vec2& inputDirection)
@@ -42,6 +42,8 @@ namespace game
 	void MoveCommand::Execute()
 	{
 		m_pActor->m_MovingDirection = m_InputDirection;
+		m_pActor->currentState->Update();
+
 	}
 
 	void MoveState::OnEnter()
@@ -61,12 +63,6 @@ namespace game
 
 	void MoveState::Update()
 	{
-		if (player.m_MovingDirection == glm::vec2{ 0,0 })
-		{
-			//player.ChangeState(&player.idleState);
-			return;
-		}
-
 		if ((dx != 0 && ((dx > 0 && player.IsMovingLeft()) || (dx < 0 && player.IsMovingRight()))) ||
 			(dy != 0 && ((dy > 0 && player.IsMovingUp()) || (dy < 0 && player.IsMovingDown()))))
 		{
@@ -82,8 +78,8 @@ namespace game
 		}
 
 		
-		glm::vec2  targetCenter = player.GetGrid()->GetCellCenter(startCell.x + dx, startCell.y + dy);
-		glm::vec2& pos = const_cast<glm::vec2&>(player.GetPos());
+		glm::vec2 targetCenter = player.GetGrid()->GetCellCenter(startCell.x + dx, startCell.y + dy);
+		glm::vec2 pos = glm::vec2{ player.GetOwner()->GetLocalPosition().x, player.GetOwner()->GetLocalPosition().y };
 
 		// Move toward that center
 		const float dt = dae::Time::m_DeltaTime;
@@ -91,10 +87,10 @@ namespace game
 		pos.x = pos.x + dx * player.GetSpeed() * dt;
 		pos.y = pos.y + dy * player.GetSpeed() * dt;
 
-
 		pos.x = glm::clamp(pos.x, static_cast<float>(player.GetGrid()->GetCellSize()) / 2.f, player.GetGrid()->GetGridExtend().x - static_cast<float>(player.GetGrid()->GetCellSize()) / 2.f);
 		pos.y = glm::clamp(pos.y, static_cast<float>(player.GetGrid()->GetCellSize()) / 2.f, player.GetGrid()->GetGridExtend().y - static_cast<float>(player.GetGrid()->GetCellSize()) / 2.f);
 
+		player.GetOwner()->SetLocalPosition(pos.x, pos.y);
 		// TODO: Fix bug with case on the edges. TargetCenter is out of bounds and can never be reached.
 
 		//targetCenter.x = glm::clamp(targetCenter.x, player.GetGrid()->GetCellCenter(0).x, player.GetGrid()->GetCellCenter(player.GetGrid()->GetColumns() - 1).x );
@@ -104,6 +100,7 @@ namespace game
 		if (glm::length(pos - targetCenter) <= eps)
 		{
 			pos = targetCenter;
+			player.GetOwner()->SetLocalPosition(pos.x, pos.y);
 			player.SetCell(startCell.x + dx, startCell.y + dy);
 
 			if (dx != 0)
@@ -119,6 +116,7 @@ namespace game
 
 			player.ChangeState(&player.idleState);
 		}
+
 	}
 }
 

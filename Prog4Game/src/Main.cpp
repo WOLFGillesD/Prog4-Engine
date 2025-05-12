@@ -69,24 +69,24 @@ void load()
 	go->AddComponent<game::GridComponent>(10, 10, 50);
 
 	auto go2 = std::make_shared<dae::GameObject>();
-	go2->AddComponent<game::PlayerComponent>(go->GetComponent<game::GridComponent>(), 1, 1);
+	go2->AddComponent<game::PlayerComponent>(go->GetComponent<game::GridComponent>(), 1, 1, 100.f);
 
 	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_UP), dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,-1)) });
 	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_DOWN), dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,1)) });
 	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_LEFT), dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(-1,0)) });
 	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_RIGHT), dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(1,0)) });
 
-	imk->AddCommand(SDLK_w, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,-1)), dae::InputState::IsDown });
-	imk->AddCommand(SDLK_w, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,0)), dae::InputState::IsUp });
+	imk->AddCommand(SDLK_w, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,-1)), dae::InputState::IsPressed });
+	//imk->AddCommand(SDLK_w, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,0)), dae::InputState::IsUp });
 
-	imk->AddCommand(SDLK_s, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,1)), dae::InputState::IsDown });
-	imk->AddCommand(SDLK_s, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,0)), dae::InputState::IsUp });
+	imk->AddCommand(SDLK_s, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,1)), dae::InputState::IsPressed });
+	//imk->AddCommand(SDLK_s, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,0)), dae::InputState::IsUp });
 
-	imk->AddCommand(SDLK_a, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(-1,0)), dae::InputState::IsDown });
-	imk->AddCommand(SDLK_a, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,0)), dae::InputState::IsUp });
+	imk->AddCommand(SDLK_a, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(-1,0)), dae::InputState::IsPressed });
+	//imk->AddCommand(SDLK_a, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,0)), dae::InputState::IsUp });
 
-	imk->AddCommand(SDLK_d, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(1,0)), dae::InputState::IsDown });
-	imk->AddCommand(SDLK_d, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,0)), dae::InputState::IsUp });
+	imk->AddCommand(SDLK_d, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(1,0)), dae::InputState::IsPressed });
+	//imk->AddCommand(SDLK_d, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,0)), dae::InputState::IsUp });
 
 	scene.Add(go2);
 	scene.Add(go);
