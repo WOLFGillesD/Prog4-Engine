@@ -12,7 +12,9 @@ set(GAME_SOURCE
     "src/Components/HealthComponent.cpp"
     "src/Components/RotatorComponent.cpp"
     "src/Components/ScoreComponent.cpp"
-)
+    "src/Components/GridComponent.cpp" 
+    "src/Components/States.h"
+    "src/Components/PlayerComponent.cpp")
 
 # list source files here
 add_executable(
