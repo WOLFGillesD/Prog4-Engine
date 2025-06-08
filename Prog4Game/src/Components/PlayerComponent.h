@@ -90,10 +90,13 @@ namespace game
 
         glm::vec2 m_MovingDirection{};
 
-        IdleState    idleState;
-        MoveState    moveUp, moveDown, moveLeft, moveRight;
-    private:
+        IdleState   idleState;
+        MoveState   moveUp;
+        MoveState   moveDown;
+        MoveState   moveLeft;
+    	MoveState   moveRight;
         IState* currentState{ nullptr };
+    private:
 
         GridComponent* m_pGrid;
         int            m_Row, m_Column;
