@@ -73,6 +73,26 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
+void dae::Renderer::RenderTexture(const Texture2D& texture, const SDL_Rect& srcRect, const SDL_Rect& dstRect, const float rotation, SDL_RendererFlip flip) const
+{
+	//SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), &srcRect, &dstRect);
+	SDL_Point center{};
+	center.x = dstRect.w / 2;
+	center.y = dstRect.h / 2;
+	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), &srcRect, &dstRect, rotation, &center, flip);
+
+}
+
+void dae::Renderer::RenderTexture(const Texture2D& texture, const SDL_Rect& srcRect, float x, float y, float width, float height, const float rotation, SDL_RendererFlip flip) const
+{
+	SDL_Rect dstRect{};
+	dstRect.x = static_cast<int>(x);
+	dstRect.y = static_cast<int>(y);
+	dstRect.w = static_cast<int>(width);
+	dstRect.h = static_cast<int>(height);
+	RenderTexture(texture, srcRect, dstRect, rotation, flip);
+}
+
 SDL_Window* dae::Renderer::GetSDLWindow() const
 {
 	return m_window;

@@ -83,7 +83,7 @@ namespace game
 
 		
 		glm::vec2  targetCenter = player.GetGrid()->GetCellCenter(startCell.x + dx, startCell.y + dy);
-		glm::vec2& pos = const_cast<glm::vec2&>(player.GetPos());
+		glm::vec2 pos = player.GetPos();
 
 		// Move toward that center
 		const float dt = dae::Time::m_DeltaTime;
@@ -94,6 +94,7 @@ namespace game
 
 		pos.x = glm::clamp(pos.x, static_cast<float>(player.GetGrid()->GetCellSize()) / 2.f, player.GetGrid()->GetGridExtend().x - static_cast<float>(player.GetGrid()->GetCellSize()) / 2.f);
 		pos.y = glm::clamp(pos.y, static_cast<float>(player.GetGrid()->GetCellSize()) / 2.f, player.GetGrid()->GetGridExtend().y - static_cast<float>(player.GetGrid()->GetCellSize()) / 2.f);
+		player.GetOwner()->SetLocalPosition(pos.x, pos.y);
 
 		// TODO: Fix bug with case on the edges. TargetCenter is out of bounds and can never be reached.
 
@@ -104,6 +105,7 @@ namespace game
 		if (glm::length(pos - targetCenter) <= eps)
 		{
 			pos = targetCenter;
+			player.GetOwner()->SetLocalPosition(pos.x, pos.y);
 			player.SetCell(startCell.x + dx, startCell.y + dy);
 
 			if (dx != 0)

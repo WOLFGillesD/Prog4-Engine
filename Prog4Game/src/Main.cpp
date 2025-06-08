@@ -71,6 +71,8 @@ void load()
 	auto go2 = std::make_shared<dae::GameObject>();
 	go2->AddComponent<game::PlayerComponent>(go->GetComponent<game::GridComponent>(), 1, 1);
 
+	go2->AddComponent<dae::SpriteComponent>("Player/PlayerMovement.png", 1, 6, 0, 90.f);
+
 	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_UP), dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,-1)) });
 	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_DOWN), dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,1)) });
 	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_LEFT), dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(-1,0)) });

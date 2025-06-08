@@ -71,15 +71,15 @@ namespace game
         {
             SDL_SetRenderDrawColor(dae::Renderer::GetInstance().GetSDLRenderer(), 0, 255, 255, 255);
 
-            SDL_Rect rect{ static_cast<int>(m_Pos.x), static_cast<int>(m_Pos.y), 20, 20};
+            SDL_Rect rect{ static_cast<int>(GetOwner()->GetWorldPosition().x), static_cast<int>(GetOwner()->GetWorldPosition().y), 20, 20};
             SDL_RenderFillRect(dae::Renderer::GetInstance().GetSDLRenderer(), &rect);
         }
 
         GridComponent* GetGrid() const { return m_pGrid; }
         glm::ivec2 GetCell() const { return { m_Row, m_Column }; }
         void SetCell(int r, int c) { m_Row = r; m_Column = c; }
-        void SetPos(const glm::vec2& p) { m_Pos = p; }
-        const glm::vec2& GetPos()  const { return m_Pos; }
+        void SetPos(const glm::vec2& p) { GetOwner()->SetLocalPosition(p.x, p.y); }
+        const glm::vec2 GetPos()  const { return GetOwner()->GetLocalPosition(); }
 
         float GetSpeed() const { return m_Speed; }
 
@@ -97,7 +97,6 @@ namespace game
 
         GridComponent* m_pGrid;
         int            m_Row, m_Column;
-        glm::vec2      m_Pos;
 
         float m_Speed = 80.f; 
     };

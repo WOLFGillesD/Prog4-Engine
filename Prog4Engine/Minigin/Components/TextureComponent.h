@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Component.h"
+#include "SDL_rect.h"
 #include "Texture2D.h"
 
 struct SDL_Texture;
@@ -24,4 +25,35 @@ namespace dae
 	private:
 		std::shared_ptr<Texture2D> m_Texture2D{};
 	};
+
+    class SpriteComponent : public Component
+    {
+    public:
+        explicit SpriteComponent(GameObject& go, const std::string& fullPath, int rows, int columns, int index = 0, float rotation = 0.f);
+        ~SpriteComponent() override = default;
+
+        void Update() override;
+        void Render() const override;
+        void SetIndex(int index);
+        int GetIndex() const { return m_Index; }
+        void SetAnimationSpeed(float fps) { m_AnimSpeed = fps; }
+        void SetRotation(float angle) { m_Rotation = angle; }
+
+    private:
+        int m_Rows;
+        int m_Columns;
+        int m_Index;
+
+        int m_SpriteWidth;
+        int m_SpriteHeight;
+
+        float m_ElapsedTime = 0.0f;
+        float m_AnimSpeed = 10.0f; // frames per second
+        float m_Rotation = 0.0f;   // rotation in degrees
+
+        SDL_Rect m_SourceRect;
+        std::shared_ptr<Texture2D> m_Texture;
+
+        void UpdateSourceRect();
+    };
 }
