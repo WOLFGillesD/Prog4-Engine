@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "Input/Command.h"
-#include "Input/Observer.h"
+#include "Event.h"
 
 namespace dae
 {
@@ -16,14 +16,14 @@ namespace dae
 		int m_CurrentLives;
 		int m_MaxLives;
 
-		std::unique_ptr<Event> m_OnDie{ std::make_unique<Event>()};
-		std::unique_ptr<Event> m_OnDeath{ std::make_unique<Event>() };
+		std::unique_ptr<Event<GameObject*>> m_OnDie{ std::make_unique<Event<GameObject*>>()};
+		std::unique_ptr<Event<GameObject*>> m_OnDeath{ std::make_unique<Event<GameObject*>>()};
 
 	public:
 		HealthComponent(GameObject& go, int startLives = 3, int maxLives = 5);
 
-		Event* GetOnDeathEvent() const { return m_OnDeath.get(); }
-		Event* GetOnDieEvent() const { return m_OnDie.get(); }
+		Event<GameObject*>* GetOnDeathEvent() const { return m_OnDeath.get(); }
+		Event<GameObject*>* GetOnDieEvent() const { return m_OnDie.get(); }
 
 		void Die();
 		void AddLive(int amount);
@@ -31,13 +31,13 @@ namespace dae
 		int GetLives();
 	};
 
-	class HealthObserver : public Observer
+	class HealthObserver : public BaseObserver<GameObject*>
 	{
 		TextComponent* m_TextIndicator{};
 	public:
 		HealthObserver(TextComponent* txtComponent);
 
-		void OnTrigger(GameObject* actor) override;
+		void Trigger(GameObject* actor) override;
 	};
 
 	class DieCommand : public Command

@@ -1,22 +1,23 @@
 #pragma once
 #include "Singleton.h"
 #include <vector>
-#include "Observer.h"
+#include "Event.h"
 
 namespace dae
 {
-	class EventManager : public Singleton<EventManager>
+	template<typename... Args>
+	class EventManager : public Singleton<EventManager<Args>>
 	{
-		std::vector<std::unique_ptr<Observer>> m_Observers;
+		std::vector<std::unique_ptr<BaseObserver<Args...>>> m_Observers;
 	public:
-		void AddObserver(std::unique_ptr<Observer> observer)
+		void AddObserver(std::unique_ptr<BaseObserver<Args...>> observer)
 		{
 			m_Observers.emplace_back(std::move(observer));
 		}
 
-		void RemoveObserver(Observer*)
+		void RemoveObserver(BaseObserver<Args...>* observer)
 		{
-			//m_Observers.erase(std::find(m_Observers.begin(), m_Observers.end(), observer));
+			m_Observers.erase(std::find(m_Observers.begin(), m_Observers.end(), observer));
 		}
 
 	};

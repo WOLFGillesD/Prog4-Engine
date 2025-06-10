@@ -3,7 +3,7 @@
 
 #include "Component.h"
 #include "Input/Command.h"
-#include "Input/Observer.h"
+#include "Event.h"
 
 namespace dae
 {
@@ -13,23 +13,23 @@ namespace dae
 	{
 		int m_score{};
 
-		std::unique_ptr<Event> m_OnScoreChange{ std::make_unique<Event>() };
+		std::unique_ptr<Event<GameObject*>> m_OnScoreChange{ std::make_unique<Event<GameObject*>>() };
 	public:
 		ScoreComponent(dae::GameObject& go);
 		void AddScore(int amount);
 		void RemoveScore(int amount);
 
 		int GetScore() const;
-		Event* OnScoreChanged() const;
+		Event<GameObject*>* OnScoreChanged() const;
 	};
 
-	class ScoreObserver : public Observer
+	class ScoreObserver : public BaseObserver<GameObject*>
 	{
 		TextComponent* m_TextIndicator{};
 	public:
 		ScoreObserver(TextComponent* txtComponent);
 
-		void OnTrigger(GameObject* actor) override;
+		void Trigger(GameObject* actor) override;
 	};
 
 	class UpScoreCommand : public Command

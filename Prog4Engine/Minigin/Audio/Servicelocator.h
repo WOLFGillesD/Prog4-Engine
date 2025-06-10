@@ -2,7 +2,7 @@
 #include <memory>
 #include <stdexcept>
 
-#include "Observer.h"
+#include "Event.h"
 #include "SoundSystem.h"
 
 
@@ -30,12 +30,12 @@ namespace dae
 		inline static std::unique_ptr<SoundSystem> m_SoundSystemInstance;
 	};
 
-	class SoundObserver : public Observer
+	class SoundObserver : public BaseObserver<GameObject*>
 	{
 		SoundID m_SoundID;
 	public:
 		SoundObserver(SoundID soundID) : m_SoundID(soundID) {}
-		void OnTrigger(GameObject*) override
+		void Trigger(GameObject*) override
 		{
 			Servicelocator::GetSoundSystem().Play(m_SoundID);
 		}

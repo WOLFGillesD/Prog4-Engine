@@ -77,7 +77,7 @@ set(ENGINE_SOURCE
     "Minigin/Input/Command.cpp" 
     "Minigin/Input/XInputGamepad.cpp"
     "Minigin/Input/Gamepad.cpp" 
-    "Minigin/Input/Observer.cpp"
+    "Minigin/Input/Event.h"
     "Minigin/Audio/Servicelocator.cpp"
     "Minigin/Audio/Soundsystem.cpp")
 

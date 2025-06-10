@@ -12,13 +12,13 @@ dae::ScoreComponent::ScoreComponent(dae::GameObject& go)
 void dae::ScoreComponent::AddScore(int amount)
 {
 	m_score += amount;
-	m_OnScoreChange->Invoke(GetOwner());
+	m_OnScoreChange->Trigger(GetOwner());
 }
 
 void dae::ScoreComponent::RemoveScore(int amount)
 {
 	m_score -= amount;
-	m_OnScoreChange->Invoke(GetOwner());
+	m_OnScoreChange->Trigger(GetOwner());
 }
 
 int dae::ScoreComponent::GetScore() const
@@ -26,7 +26,7 @@ int dae::ScoreComponent::GetScore() const
 	return m_score;
 }
 
-Event* dae::ScoreComponent::OnScoreChanged() const
+Event<dae::GameObject*>* dae::ScoreComponent::OnScoreChanged() const
 {
 	return m_OnScoreChange.get();
 }
@@ -36,7 +36,7 @@ dae::ScoreObserver::ScoreObserver(TextComponent* txtComponent)
 {
 }
 
-void dae::ScoreObserver::OnTrigger(GameObject* actor)
+void dae::ScoreObserver::Trigger(GameObject* actor)
 {
 	m_TextIndicator->SetText("Score: " + std::to_string(actor->GetComponent<ScoreComponent>()->GetScore()));
 }
