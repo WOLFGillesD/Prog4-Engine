@@ -11,58 +11,59 @@ namespace game
 {
 	class PlayerComponent;
 
+	class MovementComponent final : public dae::Component
+	{
+    public:
+        MovementComponent(dae::GameObject& go, GridComponent* grid, float speed);
+
+        void Update() override;
+
+        void HandleInput(const glm::vec2& input);
+        bool IsCellWalkable(const glm::ivec2& cell) const;
+
+		float GetSpeed() const { return m_Movespeed; }
+
+    private:
+        GridComponent* m_pGrid{};
+
+        glm::ivec2 m_CurrentCell{};
+        glm::ivec2 m_TargetCell{};
+        glm::vec2 m_Velocity{};
+
+        float m_Movespeed{};
+        bool isMoving{ false };
+    };
+
 	// +----------------------------------------+
 	// |               States		            |
 	// +----------------------------------------+
 
-    struct MoveState : IState
+    class MoveState : public IState
     {
-        PlayerComponent& player;
-        int dx{};
-    	int dy{};
-
-        glm::ivec2 startCell{};
-
-        MoveState(PlayerComponent& p, int _dx, int _dy)
-            : player(p), dx(_dx), dy(_dy)
+    public:
+        MoveState(MovementComponent* pMovement)
+            : m_pMovement(pMovement)
         {
+
         }
 
         void OnEnter() override;
         void OnExit() override;
-        void Update() override;
-    };
+        IState* Update() override;
 
-    struct IdleState : IState
-    {
-        PlayerComponent& player;
-
-        IdleState(PlayerComponent& p)
-            : player(p)
-        {
-        }
-
-        void OnEnter() override;
-        void OnExit() override{}
-        void Update() override;
+    private:
+		MovementComponent* m_pMovement{ nullptr };
     };
 
     class PlayerComponent final : public dae::Component
     {
     public:
-        PlayerComponent(dae::GameObject& go, GridComponent* pGrid, int startRow, int startColumn, float speed = 50.f)
+        PlayerComponent(dae::GameObject& go, GridComponent* pGrid, MovementComponent* pMovementComponent)
             : Component(go)
-            , idleState { *this }
-            , moveUp    { *this,  0, -1 }
-            , moveDown  { *this,  0, +1 }
-            , moveLeft  { *this, -1,  0 }
-            , moveRight { *this, +1,  0 }
+			, movementState{ pMovementComponent }
             , m_pGrid{ pGrid }
-            , m_Row{ startRow }
-            , m_Column{ startColumn }
-			, m_Speed(speed)
         {
-            ChangeState(&idleState);
+            ChangeState(&movementState);
         }
 
         void ChangeState(IState* newState);
@@ -75,126 +76,23 @@ namespace game
             SDL_RenderFillRect(dae::Renderer::GetInstance().GetSDLRenderer(), &rect);
         }
 
-        GridComponent* GetGrid() const { return m_pGrid; }
-        glm::ivec2 GetCell() const { return { m_Row, m_Column }; }
-        void SetCell(int r, int c) { m_Row = r; m_Column = c; }
-        void SetPos(const glm::vec2& p) { GetOwner()->SetLocalPosition(p.x, p.y); }
-        const glm::vec2 GetPos()  const { return GetOwner()->GetLocalPosition(); }
-
-        float GetSpeed() const { return m_Speed; }
-
-        bool IsMovingUp()    const { return m_MovingDirection.y == -1.f; }
-        bool IsMovingDown()  const { return m_MovingDirection.y == 1.f; }
-        bool IsMovingLeft()  const { return m_MovingDirection.x == -1.f; }
-        bool IsMovingRight() const { return m_MovingDirection.x == 1.f; }
-
-        glm::vec2 m_MovingDirection{};
-
-        IdleState   idleState;
-        MoveState   moveUp;
-        MoveState   moveDown;
-        MoveState   moveLeft;
-    	MoveState   moveRight;
-        IState* currentState{ nullptr };
+    	MoveState   movementState;
+        IState*     currentState{ nullptr };
+		MovementComponent* m_pMovementComponent;
     private:
 
         GridComponent* m_pGrid;
-        int            m_Row, m_Column;
-
-        float m_Speed = 80.f; 
     };
 
     class MoveCommand final : public dae::Command
 	{
-		PlayerComponent* m_pActor;
+		MovementComponent* m_pMovementComponent;
 		glm::vec2 m_InputDirection{};
 	public:
-		MoveCommand(PlayerComponent* pActor, const glm::vec2& inputDirection);
+		MoveCommand(MovementComponent* pMovementComponent, const glm::vec2& inputDirection);
 
 		void Execute() override;
         void SetInput(const glm::vec2& v2) { m_InputDirection = v2; }
 	};
 
 }
-
-//namespace game
-//{
-//
-//	// +----------------------------------------+
-//	// |               States		            |
-//	// +----------------------------------------+
-//
-//	class MovingState : public SMState
-//	{
-//	public:
-//		// Inherited via SMState
-//		void OnEnter(SMData* const pData) override;
-//		void OnExit(SMData* const pData) override;
-//		void Update(SMData* const pData) override;
-//	};
-//
-//	class IdleState : public SMState
-//	{
-//	public:
-//		void OnEnter(SMData* const pData) override;
-//		void OnExit(SMData* const pData) override;
-//		void Update(SMData* const pData) override;
-//	};
-//
-//	// +----------------------------------------+
-//	// |               Conditions	            |
-//	// +----------------------------------------+
-//
-//	class ReverseCondition : public SMCondition
-//	{
-//	public:
-//		bool Evaluate(SMData* const pBlackboard) const override;
-//	};
-//
-//	// +----------------------------------------+
-//	// |               Components	            |
-//	// +----------------------------------------+
-//
-//	class PlayerComponent final : public dae::Component
-//	{
-//	public:
-//		PlayerComponent(dae::GameObject& go, GridComponent* pGrid, int row, int column);
-//
-//		SMData* GetSMData() const
-//		{
-//			return m_movementState->GetSMData();
-//		}
-//
-//	private:
-//
-//		std::unique_ptr<SMData> CreateSMData() const;
-//
-//		int m_Row{};
-//		int m_Column{};
-//
-//		GridComponent* m_pGrid{ nullptr };
-//
-//		std::unique_ptr<StateMachine> m_movementState;
-//
-//		std::unique_ptr<MovingState> m_movingState{ std::make_unique<MovingState>()};
-//		std::unique_ptr<IdleState> m_idleState{ std::make_unique<IdleState>() };
-//
-//		std::unique_ptr<ReverseCondition> m_reverseCondition{ std::make_unique<ReverseCondition>() };
-//	};
-//
-//	// +----------------------------------------+
-//	// |               Commands		            |
-//	// +----------------------------------------+
-//
-//	class MoveCommand final : public dae::Command
-//	{
-//		PlayerComponent* m_pActor;
-//		glm::vec2 m_InputDirection{};
-//	public:
-//		MoveCommand(PlayerComponent& pActor, const glm::vec2& inputDirection, float speed = 25.f);
-//
-//		void Execute() override;
-//		void SetInput(const glm::vec2& v2);
-//	};
-//
-//}

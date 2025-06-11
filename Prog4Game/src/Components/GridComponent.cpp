@@ -81,6 +81,11 @@ glm::vec2 game::GridComponent::GetCellPosition(int index) const
 	return glm::vec2{ column * m_CellSize, row * m_CellSize };
 }
 
+glm::vec2 game::GridComponent::GetCellCenter(const glm::ivec2& cell) const
+{
+	return GetCellCenter(cell.x, cell.y);
+}
+
 glm::vec2 game::GridComponent::GetCellCenter(int row, int column) const
 {
 	return glm::vec2{ row * m_CellSize + m_CellSize / 2, column * m_CellSize + m_CellSize / 2 };
@@ -93,6 +98,11 @@ glm::vec2 game::GridComponent::GetCellCenter(int index) const
 	return glm::vec2{ row * m_CellSize + m_CellSize / 2, column * m_CellSize + m_CellSize / 2 };
 }
 
+bool game::GridComponent::IsCellValid(const glm::ivec2& cell) const
+{
+	return IsCellValid(cell.x, cell.y);
+}
+
 bool game::GridComponent::IsCellValid(int row, int col) const
 {
 	return row >= 0 && row < m_Rows
@@ -102,6 +112,24 @@ bool game::GridComponent::IsCellValid(int row, int col) const
 bool game::GridComponent::IsCellValid(int index) const
 {
 	return index < m_Cells.size();
+}
+
+bool game::GridComponent::IsObstacle(const glm::ivec2& cell) const
+{
+	return IsCellValid(cell) && GetCellState(cell.x, cell.y) == Cell::State::Blocked;
+}
+
+bool game::GridComponent::IsDirt(const glm::ivec2& cell) const
+{
+	return IsCellValid(cell) && GetCellState(cell.x, cell.y) == Cell::State::Occupied;
+}
+
+void game::GridComponent::Dig(const glm::ivec2& cell)
+{
+	if (IsDirt(cell))
+	{
+		SetCellState(cell.x, cell.y, Cell::State::Empty);
+	}
 }
 
 glm::ivec2 game::GridComponent::GetCell(const glm::vec2& pos) const

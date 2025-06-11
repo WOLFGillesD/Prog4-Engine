@@ -62,6 +62,7 @@ namespace dae
 		}
 
 		void SetLocalPosition(float x, float y);
+		void SetLocalPosition(const glm::vec2& pos);
 
 		Transform GetWorldTransform();
 		void SetLocalTransform(const Transform& transform);

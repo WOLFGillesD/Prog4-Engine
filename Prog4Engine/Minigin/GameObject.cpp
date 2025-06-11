@@ -171,3 +171,8 @@ void dae::GameObject::SetLocalPosition(float x, float y)
 	m_LocalTransform.SetPosition(x, y, 0.0f);
 	SetPositionDirty();
 }
+
+void dae::GameObject::SetLocalPosition(const glm::vec2& pos)
+{
+	SetLocalPosition(pos.x, pos.y);
+}

@@ -44,6 +44,8 @@ namespace game
 				, m_pGrid{ pGrid }
 			{
 				const int subCellCount = 25; // 5x5 grid of subcells
+				m_SubCellWidth = m_CellWidth / 5;
+
 				for (int cell{}; cell < subCellCount; ++cell)
 				{
 					m_SubCells.emplace_back(SubCell{ SubCell::SubState::Terrain });
@@ -60,9 +62,9 @@ namespace game
 					if (subCell.m_SubState == SubCell::SubState::Terrain)
 					{
 						auto parentOffset = m_pGrid->GetCellPosition(cellIndex) + glm::vec2{2,2};
-						int subCellWidth = m_CellWidth / 5 - 4;
-						int subCellOffsetX = (m_CellWidth / 5) * (index % 5);
-						int subCellOffsetY = (m_CellWidth / 5) * (index / 5);
+						int subCellWidth = m_SubCellWidth / 5 - 4;
+						int subCellOffsetX = m_SubCellWidth * (index % 5);
+						int subCellOffsetY = m_SubCellWidth * (index / 5);
 						auto rect = SDL_Rect{ static_cast<int>(parentOffset.x) + subCellOffsetX, static_cast<int>(parentOffset.y) + subCellOffsetY, subCellWidth, subCellWidth };
 						SDL_RenderFillRect(dae::Renderer::GetInstance().GetSDLRenderer(), &rect);
 					}
@@ -81,6 +83,7 @@ namespace game
 			GridComponent* m_pGrid{ nullptr };
 
 			int m_CellWidth{};
+			int m_SubCellWidth{};
 		};
 
 		GridComponent(dae::GameObject& go, int rows, int columns, int cellSize);
@@ -94,11 +97,18 @@ namespace game
 		glm::vec2 GetCellPosition(int row, int column) const;
 		glm::vec2 GetCellPosition(int index) const;
 
+		glm::vec2 GetCellCenter(const glm::ivec2& cell) const;
 		glm::vec2 GetCellCenter(int row, int column) const;
 		glm::vec2 GetCellCenter(int index) const;
 
+		bool IsCellValid(const glm::ivec2& cell) const;
 		bool IsCellValid(int row, int col) const;
 		bool IsCellValid(int index) const;
+
+		bool IsObstacle(const glm::ivec2& cell) const;
+
+		bool IsDirt(const glm::ivec2& cell) const;
+		void Dig(const glm::ivec2& cell);
 
 		glm::ivec2 GetCell(const glm::vec2& pos) const;
 
