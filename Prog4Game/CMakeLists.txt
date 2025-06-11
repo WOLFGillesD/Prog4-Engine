@@ -9,12 +9,17 @@ set(TARGET_PARAM WIN32)
 
 set(GAME_SOURCE     
     "src/Main.cpp"
-    "src/Components/HealthComponent.cpp"
+    "src/Components/Characters/HealthComponent.cpp"
     "src/Components/RotatorComponent.cpp"
-    "src/Components/ScoreComponent.cpp"
+    "src/Components/Score/ScoreComponent.cpp"
     "src/Components/GridComponent.cpp" 
     "src/Components/States.h"
-    "src/Components/PlayerComponent.cpp")
+    "src/Components/Characters/PlayerComponent.cpp")
+
+set(GAME_INCL
+    "src/Components"
+    "src/Components/Characters"
+    "src/Components/Score")
 
 # list source files here
 add_executable(
@@ -23,7 +28,7 @@ add_executable(
     ${GAME_SOURCE}
     )
 
-target_include_directories(${TARGET_NAME} PRIVATE ${implot_SOURCE_DIR} ${imgui_SOURCE_DIR})
+target_include_directories(${TARGET_NAME} PRIVATE ${implot_SOURCE_DIR} ${imgui_SOURCE_DIR} ${GAME_INCL})
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)

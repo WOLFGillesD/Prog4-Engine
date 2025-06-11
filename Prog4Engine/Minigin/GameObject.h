@@ -76,6 +76,9 @@ namespace dae
 		void SetMarkForRemoval();
 		void SetPositionDirty();
 
+		void SetDepthIndex(int depthIndex) { m_DepthIndex = depthIndex; }
+		int GetDepthIndex() const { return m_DepthIndex; }
+
 		GameObject() = default;
 		~GameObject() = default;
 		GameObject(const GameObject& other) = delete;
@@ -86,6 +89,7 @@ namespace dae
 	private:
 		Transform m_WorldTransform{};
 		Transform m_LocalTransform{};
+		int m_DepthIndex{};
 		bool m_PositionIsDirty{};
 		bool m_MarkedForRemoval{ false };
 

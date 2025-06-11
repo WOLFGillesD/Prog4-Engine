@@ -19,10 +19,10 @@
 #include "Input/EventManager.h"
 #include "Components/FpsComponent.h"
 #include "Components/GridComponent.h"
-#include "Components/HealthComponent.h"
-#include "Components/PlayerComponent.h"
+#include "Components/Characters/HealthComponent.h"
+#include "Components/Characters/PlayerComponent.h"
 #include "Components/RotatorComponent.h"
-#include "Components/ScoreComponent.h"
+#include "Components/Score/ScoreComponent.h"
 #include "Components/TextComponent.h"
 #include "Components/TextureComponent.h"
 
@@ -47,6 +47,7 @@ void load()
 	// GameObjects
 	auto go = std::make_shared<dae::GameObject>();
 	go->AddComponent<dae::TextureComponent>("background.tga");
+	go->SetDepthIndex(2);
 	scene.Add(go);
 
 	go = std::make_shared<dae::GameObject>();
@@ -66,7 +67,7 @@ void load()
 	scene.Add(go);
 
 	go = std::make_shared<dae::GameObject>();
-	go->AddComponent<game::GridComponent>(10, 10, 50);
+	go->AddComponent<game::GridComponent>(10, 15, 40);
 
 	auto go2 = std::make_shared<dae::GameObject>();
 	go2->AddComponent<game::PlayerComponent>(go->GetComponent<game::GridComponent>(), 1, 1, 100.f);

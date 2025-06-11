@@ -60,7 +60,12 @@ void Scene::LateUpdate()
 
 void Scene::Render() const
 {
-	for (const auto& object : m_objects)
+	auto renderList = m_objects;
+	std::sort(renderList.begin(), renderList.end(), [](const std::shared_ptr<GameObject>& a, const std::shared_ptr<GameObject>& b) {
+		return a->GetDepthIndex() > b->GetDepthIndex();
+		});
+
+	for (const auto& object : renderList)
 	{
 		object->Render();
 	}

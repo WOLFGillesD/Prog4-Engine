@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 
+#include "GameObject.h"
 #include "Renderer.h"
 #include "SDL_render.h"
 
@@ -11,13 +12,15 @@ game::GridComponent::GridComponent(dae::GameObject& go, int rows, int columns, i
 	, m_Columns(columns)
 	, m_CellSize(cellSize)
 {
-	m_Cells.resize(rows * columns);
+	//m_Cells.resize(rows * columns);
 	for (int row = 0; row < rows; ++row)
 	{
 		for (int column = 0; column < columns; ++column)
 		{
-			m_Cells[row * columns + column] = Cell{};
+			int index = row * columns + column;
+			m_Cells.push_back(Cell{this, index, m_CellSize });
 		}
+		GetOwner()->SetDepthIndex(1);
 	}
 }
 
@@ -110,6 +113,8 @@ void game::GridComponent::Render() const
 {
 	for (int cell = 0; cell < static_cast<int>(m_Cells.size()); ++cell)
 	{
+		m_Cells[cell].Render();
+
 		int row = cell / m_Columns;
 		int column = cell % m_Columns;
 

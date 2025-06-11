@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "Component.h"
+#include "Renderer.h"
 #include "vec2.hpp"
 
 namespace game
@@ -9,6 +10,23 @@ namespace game
 	class GridComponent : public dae::Component
 	{
 	public:
+
+		class SubCell
+		{
+		public:
+			enum class SubState
+			{
+				Empty,
+				Terrain
+			};
+
+			SubCell(SubState startState = SubState::Empty)
+				: m_SubState{ startState }
+			{
+			}
+
+			SubState m_SubState{};
+		};
 
 		class Cell
 		{
@@ -20,8 +38,49 @@ namespace game
 				Blocked
 			};
 
+			Cell(GridComponent* pGrid, int cellIndex, int cellWidth)
+				: m_CellWidth{ cellWidth }
+				, cellIndex{ cellIndex }
+				, m_pGrid{ pGrid }
+			{
+				const int subCellCount = 25; // 5x5 grid of subcells
+				for (int cell{}; cell < subCellCount; ++cell)
+				{
+					m_SubCells.emplace_back(SubCell{ SubCell::SubState::Terrain });
+				}
+			}
+
+			void Render() const
+			{
+				int index{};
+				for (const auto& subCell : m_SubCells)
+				{
+					SDL_SetRenderDrawColor(dae::Renderer::GetInstance().GetSDLRenderer(), 255, 255, 0, 255);
+
+					if (subCell.m_SubState == SubCell::SubState::Terrain)
+					{
+						auto parentOffset = m_pGrid->GetCellPosition(cellIndex) + glm::vec2{2,2};
+						int subCellWidth = m_CellWidth / 5 - 4;
+						int subCellOffsetX = (m_CellWidth / 5) * (index % 5);
+						int subCellOffsetY = (m_CellWidth / 5) * (index / 5);
+						auto rect = SDL_Rect{ static_cast<int>(parentOffset.x) + subCellOffsetX, static_cast<int>(parentOffset.y) + subCellOffsetY, subCellWidth, subCellWidth };
+						SDL_RenderFillRect(dae::Renderer::GetInstance().GetSDLRenderer(), &rect);
+					}
+
+					//auto rect = SDL_Rect{ 0, 0, static_cast<int>(m_CellWidth), static_cast<int>(m_CellWidth) };
+					//SDL_RenderDrawRect(dae::Renderer::GetInstance().GetSDLRenderer(), &rect);
+					++index;
+				}
+			}
+
 			State state{ State::Empty };
 		private:
+			std::vector<SubCell> m_SubCells{};
+
+			int cellIndex{};
+			GridComponent* m_pGrid{ nullptr };
+
+			int m_CellWidth{};
 		};
 
 		GridComponent(dae::GameObject& go, int rows, int columns, int cellSize);
