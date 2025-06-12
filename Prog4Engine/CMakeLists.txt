@@ -79,7 +79,8 @@ set(ENGINE_SOURCE
     "Minigin/Input/Gamepad.cpp" 
     "Minigin/Input/Event.h"
     "Minigin/Audio/Servicelocator.cpp"
-    "Minigin/Audio/Soundsystem.cpp")
+    "Minigin/Audio/Soundsystem.cpp" 
+    "Minigin/Components/Physics/ColliderComponent.cpp")
 
 # list source files here
 add_library(${TARGET_NAME} STATIC
@@ -93,7 +94,7 @@ target_include_directories(${TARGET_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/Minigin 
     ${CMAKE_CURRENT_SOURCE_DIR}/Minigin/Input 
     ${CMAKE_CURRENT_SOURCE_DIR}/Minigin/Components 
-    ${CMAKE_CURRENT_SOURCE_DIR}/Minigin/Components)
+    ${CMAKE_CURRENT_SOURCE_DIR}/Minigin/Components/Physics)
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)

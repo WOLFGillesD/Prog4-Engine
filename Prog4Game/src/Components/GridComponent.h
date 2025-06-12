@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include <vector>
 
 #include "Component.h"
@@ -34,8 +35,9 @@ namespace game
 			enum class State
 			{
 				Empty,
-				Occupied,
-				Blocked
+				Dirt,
+				Diamond,
+				Bag,
 			};
 
 			Cell(GridComponent* pGrid, int cellIndex, int cellWidth)
@@ -77,7 +79,7 @@ namespace game
 
 			void DigTunnel(const glm::vec2& direction);
 
-			State state{ State::Occupied };
+			State state{ State::Dirt };
 		private:
 			std::vector<SubCell> m_SubCells{};
 
@@ -123,6 +125,7 @@ namespace game
 		int GetRows() const { return m_Rows; }
 
 		void DigTunnel(const glm::ivec2& cell, const glm::vec2& direction);
+		bool LoadFromCSV(const std::string& csvData);
 
 	private:
 

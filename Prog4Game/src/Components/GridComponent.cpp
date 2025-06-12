@@ -1,5 +1,7 @@
 #include "GridComponent.h"
 
+#include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 #include "GameObject.h"
@@ -126,12 +128,12 @@ bool game::GridComponent::IsCellValid(int index) const
 
 bool game::GridComponent::IsObstacle(const glm::ivec2& cell) const
 {
-	return IsCellValid(cell) && GetCellState(cell.x, cell.y) == Cell::State::Blocked;
+	return IsCellValid(cell) && GetCellState(cell.x, cell.y) == Cell::State::Bag;
 }
 
 bool game::GridComponent::IsDirt(const glm::ivec2& cell) const
 {
-	return IsCellValid(cell) && GetCellState(cell.x, cell.y) == Cell::State::Occupied;
+	return IsCellValid(cell) && GetCellState(cell.x, cell.y) == Cell::State::Dirt;
 }
 
 void game::GridComponent::Dig(const glm::ivec2& cell)
@@ -172,6 +174,54 @@ void game::GridComponent::DigTunnel(const glm::ivec2& cell, const glm::vec2& dir
 {
 	if (!IsCellValid(cell)) return;
 	m_Cells[cell.y * m_Columns + cell.x].DigTunnel(direction);
+}
+
+bool game::GridComponent::LoadFromCSV(const std::string& csvData)
+{
+	std::stringstream ss(csvData);
+	std::string line;
+	int currentRow{};
+
+	while (std::getline(ss, line))
+	{
+		if (line.empty())
+			continue;
+
+		std::stringstream lineStream(line);
+		std::string cellStr;
+		int currentColumn{};
+
+		while (std::getline(lineStream, cellStr, ';'))
+		{
+			if (currentRow >= m_Rows || currentColumn >= m_Columns)
+			{
+				std::cout << "CSV data exceeds grid size at row " << currentRow << " column " << currentColumn << "\n";
+				return false; // or just break or ignore excess
+			}
+
+			int cellValue = std::stoi(cellStr);
+			Cell::State state = Cell::State::Empty;
+
+			state = static_cast<Cell::State>(cellValue);
+
+			SetCellState(currentColumn, currentRow, state);
+			++currentColumn;
+		}
+
+		if (currentColumn != m_Columns)
+		{
+			std::cout << "Warning: CSV row " << currentRow << " column count (" << currentColumn << ") does not match grid columns (" << m_Columns << ")\n";
+		}
+
+		++currentRow;
+	}
+
+	if (currentRow != m_Rows)
+	{
+		std::cout << "Warning: CSV row count (" << currentRow << ") does not match grid rows (" << m_Rows << ")\n";
+	}
+
+	return true;
 }
 
 void game::GridComponent::Render() const

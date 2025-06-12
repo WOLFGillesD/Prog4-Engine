@@ -14,6 +14,7 @@
 
 #include <filesystem>
 
+#include "ColliderComponent.h"
 #include "InputManager.h"
 #include "Audio/Servicelocator.h"
 #include "Input/EventManager.h"
@@ -70,10 +71,10 @@ void load()
 	go->AddComponent<game::GridComponent>(10, 15, 40, glm::vec2{20, 80});
 
 	auto go2 = std::make_shared<dae::GameObject>();
-	//go2->AddComponent<game::PlayerComponent>(go->GetComponent<game::GridComponent>(), 1, 1, 100.f);
 	go2->AddComponent<game::MovementComponent>(go->GetComponent<game::GridComponent>(), 100.f);
 
 	go2->AddComponent<dae::SpriteComponent>("Player/PlayerMovement.png", 1, 6, 0, 90.f);
+	go2->AddComponent<dae::ColliderComponent>(glm::vec2(40, 40), glm::vec2(0, 0), "Player");
 
 	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_UP), dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::MovementComponent>(), glm::vec2(0,-1)) });
 	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_DOWN), dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::MovementComponent>(), glm::vec2(0,1)) });

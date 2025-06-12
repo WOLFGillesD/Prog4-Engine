@@ -42,4 +42,28 @@ namespace dae
 
 		void Execute() override;
 	};
+
+
+	class Diamond : public dae::Component
+	{
+	public:
+		Diamond(dae::GameObject& go, int scoreValue = 100)
+			: dae::Component(go)
+			, m_ScoreValue(scoreValue)
+		{
+			GetOwner()->SetDepthIndex(-1);
+		}
+
+		void OnCollision(dae::GameObject* other)
+		{
+			if (other->GetComponent<ScoreComponent>())
+			{
+				other->GetComponent<ScoreComponent>()->AddScore(m_ScoreValue);
+				GetOwner()->SetMarkForRemoval();
+			}
+		}
+	private:
+		int m_ScoreValue{ 100 };
+
+	};
 }
