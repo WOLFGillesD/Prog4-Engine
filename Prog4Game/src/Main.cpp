@@ -67,11 +67,11 @@ void load()
 	go->SetLocalPosition(20, 80);
 	scene.Add(go);
 
-	go = std::make_shared<dae::GameObject>();
-	go->AddComponent<game::GridComponent>(10, 15, 40, glm::vec2{20, 80});
+	auto goGrid = std::make_shared<dae::GameObject>();
+	goGrid->AddComponent<game::GridComponent>(10, 15, 40, glm::vec2{20, 80});
 
 	auto go2 = std::make_shared<dae::GameObject>();
-	go2->AddComponent<game::MovementComponent>(go->GetComponent<game::GridComponent>(), 100.f);
+	go2->AddComponent<game::MovementComponent>(goGrid->GetComponent<game::GridComponent>(), 100.f);
 
 	go2->AddComponent<dae::SpriteComponent>("Player/PlayerMovement.png", 1, 6, 0, 90.f);
 	go2->AddComponent<dae::ColliderComponent>(glm::vec2(40, 40), glm::vec2(0, 0), "Player");
@@ -94,7 +94,16 @@ void load()
 	//imk->AddCommand(SDLK_d, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,0)), dae::InputState::IsUp });
 
 	scene.Add(go2);
-	scene.Add(go);
+
+	go2 = std::make_shared<dae::GameObject>();
+
+	go2->AddComponent<dae::TextureComponent>("VRHOB1.png");
+	go2->SetLocalPosition(goGrid->GetComponent<game::GridComponent>()->GetCellPosition(5, 5));
+	go2->AddComponent<dae::ColliderComponent>(glm::vec2{ 10,10 }, glm::vec2{0,0}, "Test");
+	go2->AddComponent<game::DiamondComponent>(go2->GetComponent<dae::ColliderComponent>());
+	scene.Add(go2);
+
+	scene.Add(goGrid);
 	//// AUDIO
 
 	//// ----- Sound Service logger
