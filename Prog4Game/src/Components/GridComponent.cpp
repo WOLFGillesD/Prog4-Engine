@@ -24,9 +24,9 @@ game::GridComponent::GridComponent(dae::GameObject& go, int rows, int columns, i
 	}
 }
 
-game::GridComponent::Cell::State game::GridComponent::GetCellState(int row, int column) const
+game::GridComponent::Cell::State game::GridComponent::GetCellState(int column, int row) const
 {
-	if (row < 0 || row >= m_Rows || column < 0 || column >= m_Columns)
+	if (column < 0 || column >= m_Columns || row < 0 || row >= m_Rows)
 	{
 		throw std::out_of_range("Cell index out of range");
 	}
@@ -43,9 +43,9 @@ game::GridComponent::Cell::State game::GridComponent::GetCellState(int index) co
 	return m_Cells[index].state;
 }
 
-void game::GridComponent::SetCellState(int row, int column, Cell::State state)
+void game::GridComponent::SetCellState(int column, int row, Cell::State state)
 {
-	if (row < 0 || row >= m_Rows || column < 0 || column >= m_Columns)
+	if (column < 0 || column >= m_Columns || row < 0 || row >= m_Rows)
 	{
 		throw std::out_of_range("Cell index out of range");
 	}
@@ -61,9 +61,9 @@ void game::GridComponent::SetCellState(int index, Cell::State state)
 	m_Cells[index].state = state;
 }
 
-glm::vec2 game::GridComponent::GetCellPosition(int row, int column) const
+glm::vec2 game::GridComponent::GetCellPosition(int column, int row) const
 {
-	if (row < 0 || row >= m_Rows || column < 0 || column >= m_Columns)
+	if (column < 0 || column >= m_Columns || row < 0 || row >= m_Rows)
 	{
 		throw std::out_of_range("Cell index out of range");
 	}
@@ -86,9 +86,9 @@ glm::vec2 game::GridComponent::GetCellCenter(const glm::ivec2& cell) const
 	return GetCellCenter(cell.x, cell.y);
 }
 
-glm::vec2 game::GridComponent::GetCellCenter(int row, int column) const
+glm::vec2 game::GridComponent::GetCellCenter(int column, int row) const
 {
-	return glm::vec2{ row * m_CellSize + m_CellSize / 2, column * m_CellSize + m_CellSize / 2 };
+	return glm::vec2{ column * m_CellSize + m_CellSize / 2, row * m_CellSize + m_CellSize / 2 };
 }
 
 glm::vec2 game::GridComponent::GetCellCenter(int index) const
@@ -103,10 +103,10 @@ bool game::GridComponent::IsCellValid(const glm::ivec2& cell) const
 	return IsCellValid(cell.x, cell.y);
 }
 
-bool game::GridComponent::IsCellValid(int row, int col) const
+bool game::GridComponent::IsCellValid(int column, int row) const
 {
-	return row >= 0 && row < m_Rows
-		&& col >= 0 && col < m_Columns;
+	return column >= 0 && column < m_Columns
+		&& row >= 0 && row < m_Rows;
 }
 
 bool game::GridComponent::IsCellValid(int index) const

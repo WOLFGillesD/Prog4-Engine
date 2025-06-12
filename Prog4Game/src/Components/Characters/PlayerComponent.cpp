@@ -55,7 +55,6 @@ namespace game
 		, m_pGrid(grid)
 		, m_Movespeed(speed)
 	{
-		//position = grid->CellToWorld(grid->WorldToCell(position));
 		glm::ivec2 gridIndex = grid->GetCell(GetOwner()->GetLocalPosition());
 		GetOwner()->SetLocalPosition(glm::vec2(grid->GetCellCenter(gridIndex.x, gridIndex.y)));
 	}
@@ -112,7 +111,6 @@ namespace game
 			glm::vec2 direction = diff / distToTarget; // normalize
 			GetOwner()->SetLocalPosition(position + direction * step);
 		}
-		// (Here you would typically also update the entity's transform with 'position'.)
 	}
 
 	bool MovementComponent::IsCellWalkable(const glm::ivec2& cell) const

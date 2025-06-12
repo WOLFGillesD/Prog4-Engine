@@ -88,21 +88,21 @@ namespace game
 
 		GridComponent(dae::GameObject& go, int rows, int columns, int cellSize);
 
-		Cell::State GetCellState(int row, int column) const;
+		Cell::State GetCellState(int column, int row) const;
 		Cell::State GetCellState(int index) const;
 
-		void SetCellState(int row, int column, Cell::State state);
+		void SetCellState(int column, int row, Cell::State state);
 		void SetCellState(int index, Cell::State state);
 
-		glm::vec2 GetCellPosition(int row, int column) const;
+		glm::vec2 GetCellPosition(int column, int row) const;
 		glm::vec2 GetCellPosition(int index) const;
 
 		glm::vec2 GetCellCenter(const glm::ivec2& cell) const;
-		glm::vec2 GetCellCenter(int row, int column) const;
+		glm::vec2 GetCellCenter(int column, int row) const;
 		glm::vec2 GetCellCenter(int index) const;
 
 		bool IsCellValid(const glm::ivec2& cell) const;
-		bool IsCellValid(int row, int col) const;
+		bool IsCellValid(int column, int row) const;
 		bool IsCellValid(int index) const;
 
 		bool IsObstacle(const glm::ivec2& cell) const;
@@ -114,7 +114,7 @@ namespace game
 
 		int GetCellSize() const { return m_CellSize; }
 
-		glm::vec2 GetGridExtend() const { return glm::vec2{ m_Rows * m_CellSize, m_Columns * m_CellSize}; }
+		glm::vec2 GetGridExtend() const { return glm::vec2{ m_Columns * m_CellSize, m_Rows * m_CellSize }; }
 
 		int GetColumns() const { return m_Columns; }
 		int GetRows() const { return m_Rows; }
