@@ -61,6 +61,15 @@ void game::GridComponent::SetCellState(int index, Cell::State state)
 	m_Cells[index].state = state;
 }
 
+glm::vec2 game::GridComponent::GetCellPosition(const glm::ivec2& cell) const
+{
+	if (!IsCellValid(cell))
+	{
+		throw std::out_of_range("Cell index out of range");
+	}
+	return glm::vec2{ cell.x * m_CellSize, cell.y * m_CellSize };
+}
+
 glm::vec2 game::GridComponent::GetCellPosition(int column, int row) const
 {
 	if (column < 0 || column >= m_Columns || row < 0 || row >= m_Rows)
@@ -135,6 +144,33 @@ void game::GridComponent::Dig(const glm::ivec2& cell)
 glm::ivec2 game::GridComponent::GetCell(const glm::vec2& pos) const
 {
 	return glm::ivec2{ static_cast<int>(pos.x) / m_CellSize, static_cast<int>(pos.y) / m_CellSize};
+}
+
+// Adds to Cell class in GridComponent.h
+void game::GridComponent::Cell::DigTunnel(const glm::vec2& direction)
+{
+	const int width = 5;
+	for (int i = 0; i < width * width; ++i)
+	{
+		int row = i / width;
+		int col = i % width;
+		bool dig = false;
+
+		if (direction.x != 0 && row >= 1 && row <= 3) // horizontal: dig middle 3 rows
+			dig = true;
+		if (direction.y != 0 && col >= 1 && col <= 3) // vertical: dig middle 3 cols
+			dig = true;
+
+		if (dig)
+			m_SubCells[i].m_SubState = SubCell::SubState::Empty;
+	}
+}
+
+// Adds to GridComponent.cpp (outside class definition)
+void game::GridComponent::DigTunnel(const glm::ivec2& cell, const glm::vec2& direction)
+{
+	if (!IsCellValid(cell)) return;
+	m_Cells[cell.y * m_Columns + cell.x].DigTunnel(direction);
 }
 
 void game::GridComponent::Render() const

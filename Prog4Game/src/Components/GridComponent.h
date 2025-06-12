@@ -75,7 +75,9 @@ namespace game
 				}
 			}
 
-			State state{ State::Empty };
+			void DigTunnel(const glm::vec2& direction);
+
+			State state{ State::Occupied };
 		private:
 			std::vector<SubCell> m_SubCells{};
 
@@ -94,6 +96,7 @@ namespace game
 		void SetCellState(int column, int row, Cell::State state);
 		void SetCellState(int index, Cell::State state);
 
+		glm::vec2 GetCellPosition(const glm::ivec2& cell) const;
 		glm::vec2 GetCellPosition(int column, int row) const;
 		glm::vec2 GetCellPosition(int index) const;
 
@@ -119,6 +122,7 @@ namespace game
 		int GetColumns() const { return m_Columns; }
 		int GetRows() const { return m_Rows; }
 
+		void DigTunnel(const glm::ivec2& cell, const glm::vec2& direction);
 
 	private:
 

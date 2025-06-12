@@ -50,18 +50,19 @@ namespace game
 		m_pMovementComponent->HandleInput(m_InputDirection);
 	}
 
-	MovementComponent::MovementComponent(dae::GameObject& go, GridComponent* grid, float speed)
+	MovementComponent::MovementComponent(dae::GameObject& go, GridComponent* grid, float speed, bool canDig)
 		: Component(go)
 		, m_pGrid(grid)
 		, m_Movespeed(speed)
+		, m_CanDig(canDig)
 	{
 		glm::ivec2 gridIndex = grid->GetCell(GetOwner()->GetLocalPosition());
-		GetOwner()->SetLocalPosition(glm::vec2(grid->GetCellCenter(gridIndex.x, gridIndex.y)));
+		GetOwner()->SetLocalPosition(glm::vec2(grid->GetCellPosition(gridIndex.x, gridIndex.y)));
 	}
 
 	void MovementComponent::HandleInput(const glm::vec2& input)
 	{
-		if (isMoving) return;
+		if (m_IsMoving) return;
 
 		// Restrict to cardinal direction
 		glm::vec2 dir(0.0f);
@@ -76,23 +77,25 @@ namespace game
 		glm::ivec2 nextCell = currentCell + glm::ivec2(dir);
 		if (!m_pGrid->IsCellValid(nextCell) || m_pGrid->IsObstacle(nextCell)) return;
 
-		if (m_pGrid->IsDirt(nextCell))
+		if (m_pGrid->IsDirt(nextCell) && m_CanDig)
 		{
-			m_pGrid->Dig(nextCell); // dig the path if needed
+			//m_pGrid->Dig(nextCell); // dig the path if needed
+			m_pGrid->DigTunnel(currentCell, dir);
+			m_pGrid->DigTunnel(nextCell, dir);
 		}
 		// Begin smooth movement to the next cell
 		m_TargetCell = nextCell;
-		isMoving = true;
+		m_IsMoving = true;
 		m_Velocity = dir * m_Movespeed;
 	}
 
 	void MovementComponent::Update()
 	{
-		if (!isMoving) return;
+		if (!m_IsMoving) return;
 
 		const glm::vec2& position = GetOwner()->GetLocalPosition();
 
-		glm::vec2 targetPos = m_pGrid->GetCellCenter(m_TargetCell);
+		glm::vec2 targetPos = m_pGrid->GetCellPosition(m_TargetCell);
 		glm::vec2 diff = targetPos - position;
 
 		float distToTarget = glm::length(diff);
@@ -103,7 +106,7 @@ namespace game
 			// Reached or overshot the target cell center
 			GetOwner()->SetLocalPosition(targetPos);
 			m_CurrentCell = m_TargetCell;
-			isMoving = false;
+			m_IsMoving = false;
 		}
 		else 
 		{
