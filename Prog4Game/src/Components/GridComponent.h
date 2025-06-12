@@ -88,7 +88,7 @@ namespace game
 			int m_SubCellWidth{};
 		};
 
-		GridComponent(dae::GameObject& go, int rows, int columns, int cellSize);
+		GridComponent(dae::GameObject& go, int rows, int columns, int cellSize, const glm::vec2& offset = {0,0} );
 
 		Cell::State GetCellState(int column, int row) const;
 		Cell::State GetCellState(int index) const;
@@ -129,6 +129,8 @@ namespace game
 		void Render() const override;
 
 		std::vector<Cell> m_Cells{};
+
+		glm::vec2 m_Offset{};
 
 		int m_Rows{};
 		int m_Columns{};

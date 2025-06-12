@@ -67,7 +67,7 @@ void load()
 	scene.Add(go);
 
 	go = std::make_shared<dae::GameObject>();
-	go->AddComponent<game::GridComponent>(10, 15, 40);
+	go->AddComponent<game::GridComponent>(10, 15, 40, glm::vec2{20, 80});
 
 	auto go2 = std::make_shared<dae::GameObject>();
 	//go2->AddComponent<game::PlayerComponent>(go->GetComponent<game::GridComponent>(), 1, 1, 100.f);

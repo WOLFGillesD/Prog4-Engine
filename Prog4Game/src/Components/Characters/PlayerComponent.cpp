@@ -50,14 +50,13 @@ namespace game
 		m_pMovementComponent->HandleInput(m_InputDirection);
 	}
 
-	MovementComponent::MovementComponent(dae::GameObject& go, GridComponent* grid, float speed, bool canDig)
+	MovementComponent::MovementComponent(dae::GameObject& go, GridComponent* grid, float speed, bool canDig, const glm::ivec2& startCell)
 		: Component(go)
 		, m_pGrid(grid)
 		, m_Movespeed(speed)
 		, m_CanDig(canDig)
 	{
-		glm::ivec2 gridIndex = grid->GetCell(GetOwner()->GetLocalPosition());
-		GetOwner()->SetLocalPosition(glm::vec2(grid->GetCellPosition(gridIndex.x, gridIndex.y)));
+		GetOwner()->SetLocalPosition(glm::vec2(grid->GetCellPosition(startCell)));
 	}
 
 	void MovementComponent::HandleInput(const glm::vec2& input)
