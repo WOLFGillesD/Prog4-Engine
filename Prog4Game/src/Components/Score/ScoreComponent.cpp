@@ -71,9 +71,10 @@ void game::EmeraldComponent::Update()
 	
 }
 
-void game::EmeraldComponent::OnCollide(dae::ColliderComponent& /*other*/)
+void game::EmeraldComponent::OnCollide(dae::ColliderComponent& other)
 {
-	m_pScore->AddScore(m_ScoreValue);
+    if (other.GetTag() == "Player")
+		m_pScore->AddScore(m_ScoreValue);
 	GetOwner()->SetMarkForRemoval();
 	std::cout << "Diamond collected by Player" << "\n";
 }

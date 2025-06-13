@@ -52,10 +52,10 @@ void load()
 	go->SetDepthIndex(2);
 	scene.Add(go);
 
-	go = std::make_shared<dae::GameObject>();
-	go->AddComponent<dae::TextureComponent>("logo.tga");
-	go->SetLocalPosition(216, 180);
-	scene.Add(go);
+	//go = std::make_shared<dae::GameObject>();
+	//go->AddComponent<dae::TextureComponent>("logo.tga");
+	//go->SetLocalPosition(216, 180);
+	//scene.Add(go);
 
 	go = std::make_shared<dae::GameObject>();
 	go->AddComponent<dae::TextComponent>("Programming 4 Assignment", font);
@@ -65,7 +65,7 @@ void load()
 	go = std::make_shared<dae::GameObject>();
 	go->AddComponent<dae::TextComponent>("FPS", font);
 	go->AddComponent<dae::FpsComponent>();
-	go->SetLocalPosition(20, 80);
+	go->SetLocalPosition(20, 40);
 	scene.Add(go);
 
 	auto scoreIndicator = std::make_shared<dae::GameObject>();
@@ -180,6 +180,7 @@ void load()
 		}
 	}
 
+	// NOBIN
 	auto npc1 = std::make_shared<dae::GameObject>();
 	npc1->AddComponent<game::MovementComponent>(goGrid->GetComponent<game::GridComponent>(), 100.f, glm::ivec2{ 14,0 });
 
@@ -194,6 +195,29 @@ void load()
 		, npc1->GetComponent<game::HealthComponent>());
 
 	scene.Add(npc1);
+
+
+	// HOBIN
+	npc1 = std::make_shared<dae::GameObject>();
+	npc1->AddComponent<game::MovementComponent>(goGrid->GetComponent<game::GridComponent>(), 100.f, glm::ivec2{ 14,0 });
+
+	npc1->AddComponent<dae::SpriteComponent>("Player/PlayerMovement.png", 1, 6, 0, 90.f);
+	npc1->AddComponent<dae::ColliderComponent>(glm::vec2(40, 40), glm::vec2(0, 0), "Enemy");
+	npc1->AddComponent<game::HealthComponent>();
+
+	npc1->AddComponent<game::Hobbin>(goGrid->GetComponent<game::GridComponent>()
+		, npc1->GetComponent<game::MovementComponent>()
+		, playerGameObj->GetComponent<game::PlayerComponent>()
+		, playerGameObj->GetComponent<game::ScoreComponent>()
+		, npc1->GetComponent<game::HealthComponent>());
+
+	scene.Add(npc1);
+
+
+
+
+
+
 
 	//auto go2 = std::make_shared<dae::GameObject>();
 
