@@ -75,28 +75,28 @@ public:
 	void AddObserver(BaseObserver<Args...>* observer)
 	{
 		if (!observer) return;
-		m_pObservers.push_back(observer);
+		m_Observers.push_back(observer);
 	}
 
 	void RemoveObserver(BaseObserver<Args...>* observer)
 	{
 		if (!observer) return;
-		if (m_pObservers.empty()) return;
+		if (m_Observers.empty()) return;
 
-		m_pObservers.erase(observer);
+		std::erase(m_Observers, observer);
 	}
 
 	void RemoveAllListeners()
 	{
-		m_pObservers.clear();
+		m_Observers.clear();
 	}
 
 	void Trigger(Args... args)
 	{
-		for (const auto& observer : m_pObservers)
+		for (const auto& observer : m_Observers)
 			observer->Trigger(args...);
 	}
 
 private:
-	std::vector<BaseObserver<Args...>*> m_pObservers{};
+	std::vector<BaseObserver<Args...>*> m_Observers{};
 };

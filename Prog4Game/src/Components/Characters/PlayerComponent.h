@@ -6,6 +6,7 @@
 #include "Event.h"
 #include "States.h"
 #include "GridComponent.h"
+#include "HealthComponent.h"
 #include "Renderer.h"
 #include "ScoreComponent.h"
 #include "TextComponent.h"
@@ -60,12 +61,14 @@ namespace game
     class PlayerComponent final : public dae::Component
     {
     public:
-        PlayerComponent(dae::GameObject& go, GridComponent* pGrid, MovementComponent* pMovementComponent, dae::TextComponent* pTxtComp, game::ScoreComponent* pScoreComponent)
+        PlayerComponent(dae::GameObject& go, GridComponent* pGrid, MovementComponent* pMovementComponent, dae::TextComponent* pTxtComp, game::ScoreComponent* pScoreComponent, HealthComponent* pHealth)
             : Component(go)
 			, movementState{ pMovementComponent }
             , m_pGrid{ pGrid }
 			, m_ScoreObserver(std::make_unique<game::ScoreObserver>(pTxtComp))
+			, m_pHealthComp(pHealth)
         {
+            pHealth->GetOnDieEvent()->AddObserver(&m_HealthObserver);
             ChangeState(&movementState);
 			pScoreComponent->OnScoreChanged()->AddObserver(m_ScoreObserver.get());
         }
@@ -75,11 +78,18 @@ namespace game
 
     	MoveState   movementState;
         IState*     currentState{ nullptr };
-		MovementComponent* m_pMovementComponent;
+
+        void OnHealthChanged(int newHealth);
     private:
+
 		std::unique_ptr<ScoreObserver> m_ScoreObserver;
 
         GridComponent* m_pGrid;
+		MovementComponent* m_pMovementComponent;
+        HealthComponent* m_pHealthComp;
+
+        Observer<int> m_HealthObserver{this, &PlayerComponent::OnHealthChanged};
+
     };
 
     class MoveCommand final : public dae::Command
@@ -92,5 +102,22 @@ namespace game
 		void Execute() override;
         void SetInput(const glm::vec2& v2) { m_InputDirection = v2; }
 	};
+
+    class PlayerLivesComponent : public dae::Component
+    {
+    public:
+	    PlayerLivesComponent(dae::GameObject& go, HealthComponent* pHealth)
+		    : Component(go)
+			, m_pHealthComp(pHealth)
+	    {
+
+	    }
+
+        void Render() const override;
+
+    private:
+        HealthComponent* m_pHealthComp;
+
+    };
 
 }

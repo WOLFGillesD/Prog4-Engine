@@ -7,6 +7,7 @@
 #include <string>
 
 #include "DaeTime.h"
+#include "HealthComponent.h"
 
 game::ScoreComponent::ScoreComponent(dae::GameObject& go)
 	: Component(go)
@@ -175,22 +176,40 @@ void game::BagComponent::Land()
 
 void game::BagComponent::OnCollide(dae::ColliderComponent& other)
 {
-    if (m_State == State::Static)
-    {
-        float dir = (other.GetOwner()->GetLocalPosition().x < GetOwner()->GetLocalPosition().x) ? 1.0f : -1.0f;
-        GetOwner()->SetLocalPosition(glm::vec2{ GetOwner()->GetLocalPosition() } + glm::vec2{ m_pGrid->GetCellSize() * dir, 0 });
-        m_Cell = m_pGrid->GetCell(GetOwner()->GetLocalPosition());
-    }
-    else if (m_State == State::Pickupable)
-    {
-		if (other.GetTag() == "Player")
+	switch (m_State)
+	{
+	case State::Static:
+	    {
+	        float dir = (other.GetOwner()->GetLocalPosition().x < GetOwner()->GetLocalPosition().x) ? 1.0f : -1.0f;
+	        GetOwner()->SetLocalPosition(glm::vec2{ GetOwner()->GetLocalPosition() } + glm::vec2{ m_pGrid->GetCellSize() * dir, 0 });
+	        m_Cell = m_pGrid->GetCell(GetOwner()->GetLocalPosition());
+	    }
+		break;
+	case State::Pickupable:
+	    {
+			if (other.GetTag() == "Player")
+			{
+				m_pScore->AddScore(500);
+	            GetOwner()->SetMarkForRemoval();
+			}
+	        else if (other.GetTag() == "Enemy")
+	        {
+	            GetOwner()->SetMarkForRemoval();
+	        }
+	    }
+		break;
+    default:
+	case State::Delaying:
+		break;
+	case State::Falling:
 		{
-			m_pScore->AddScore(500);
-            GetOwner()->SetMarkForRemoval();
+			auto hComp = other.GetOwner()->GetComponent<HealthComponent>();
+            if (hComp == nullptr) break;
+
+            hComp->Die();
 		}
-        else if (other.GetTag() == "Enemy")
-        {
-            GetOwner()->SetMarkForRemoval();
-        }
-    }
+		break;
+	case State::Destroyed:
+		break;
+	}
 }

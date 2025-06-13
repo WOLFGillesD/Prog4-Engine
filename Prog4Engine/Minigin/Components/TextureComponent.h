@@ -12,7 +12,7 @@ namespace dae
 	class TextureComponent : public Component
 	{
 	public:
-		explicit TextureComponent(GameObject& go, const std::string& fullPath, float scale = 1.f);
+		explicit TextureComponent(GameObject& go, const std::string& fullPath, float scale = 1.f, const glm::vec2& offset = {0,0});
 		~TextureComponent() override = default;
 
 		void Render() const override;
@@ -25,6 +25,7 @@ namespace dae
 	private:
 		std::shared_ptr<Texture2D> m_Texture2D{};
         float m_Scale{};
+        glm::vec2 m_Offset{};
 	};
 
     class SpriteComponent : public Component

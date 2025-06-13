@@ -8,10 +8,10 @@ namespace dae
 	class TextComponent;
 }
 
-namespace dae
+namespace game
 {
 
-	class HealthComponent : public Component
+	class HealthComponent : public dae::Component
 	{
 		int m_CurrentLives;
 		int m_MaxLives;
@@ -20,7 +20,7 @@ namespace dae
 		std::unique_ptr<Event<>> m_OutOfLives{ std::make_unique<Event<>>()};
 
 	public:
-		HealthComponent(GameObject& go, int startLives = 3, int maxLives = 5);
+		HealthComponent(dae::GameObject& go, int startLives = 3, int maxLives = 5);
 
 		Event<>* GetOnOutOfLivesEvent() const { return m_OutOfLives.get(); }
 		Event<int>* GetOnDieEvent() const { return m_OnDie.get(); }
@@ -33,14 +33,14 @@ namespace dae
 
 	class HealthObserver : public BaseObserver<int>
 	{
-		TextComponent* m_TextIndicator{};
+		dae::TextComponent* m_TextIndicator{};
 	public:
-		HealthObserver(TextComponent* txtComponent);
+		HealthObserver(dae::TextComponent* txtComponent);
 
 		void Trigger(int newLifeCount) override;
 	};
 
-	class DieCommand : public Command
+	class DieCommand : public dae::Command
 	{
 		HealthComponent* m_hc;
 	public:

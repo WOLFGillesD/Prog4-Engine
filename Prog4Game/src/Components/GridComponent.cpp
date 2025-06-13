@@ -150,7 +150,7 @@ bool game::GridComponent::IsCellValid(int index) const
 
 bool game::GridComponent::IsObstacle(const glm::ivec2& cell) const
 {
-	return IsCellValid(cell) && GetCellState(cell.x, cell.y) == Cell::State::Bag;
+	return IsCellValid(cell) && GetCellState(cell.x, cell.y) == Cell::State::Dirt;
 }
 
 bool game::GridComponent::IsDirt(const glm::ivec2& cell) const

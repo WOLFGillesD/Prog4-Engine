@@ -16,6 +16,7 @@
 
 #include "ColliderComponent.h"
 #include "InputManager.h"
+#include "NPCComponents.h"
 #include "Audio/Servicelocator.h"
 #include "Input/EventManager.h"
 #include "Components/FpsComponent.h"
@@ -83,14 +84,17 @@ void load()
 	playerGameObj->AddComponent<dae::SpriteComponent>("Player/PlayerMovement.png", 1, 6, 0, 90.f);
 	playerGameObj->AddComponent<dae::ColliderComponent>(glm::vec2(40, 40), glm::vec2(0, 0), "Player");
 	playerGameObj->AddComponent<game::ScoreComponent>();
+	playerGameObj->AddComponent<game::HealthComponent>();
 
 	//auto scoreObserver = std::make_unique<game::ScoreObserver>(scoreIndicator->GetComponent<dae::TextComponent>());
 	//playerGameObj->GetComponent<game::ScoreComponent>()->OnScoreChanged()->AddObserver(scoreObserver.get());
 
 	playerGameObj->AddComponent<game::PlayerComponent>(goGrid->GetComponent<game::GridComponent>()
-														, goGrid->GetComponent<game::MovementComponent>()
-														,scoreIndicator->GetComponent<dae::TextComponent>()
-														, playerGameObj->GetComponent<game::ScoreComponent>());
+														, playerGameObj->GetComponent<game::MovementComponent>()
+														, scoreIndicator->GetComponent<dae::TextComponent>()
+														, playerGameObj->GetComponent<game::ScoreComponent>()
+														, playerGameObj->GetComponent<game::HealthComponent>());
+	scene.Add(playerGameObj);
 	//eventManager.AddObserver(std::move(scoreObserver));
 
 	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_UP), dae::InputCommand{ new game::MoveCommand(playerGameObj->GetComponent<game::MovementComponent>(), glm::vec2(0,-1)) });
@@ -110,7 +114,6 @@ void load()
 	imk->AddCommand(SDLK_d, dae::InputCommand{ new game::MoveCommand(playerGameObj->GetComponent<game::MovementComponent>(), glm::vec2(1,0)), dae::InputState::IsPressed });
 	//imk->AddCommand(SDLK_d, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,0)), dae::InputState::IsUp });
 
-	scene.Add(playerGameObj);
 
 	// Add all the players
 	{
@@ -153,7 +156,7 @@ void load()
 				case 2:
 					{
 						auto go2 = std::make_shared<dae::GameObject>();
-						go2->AddComponent<dae::TextureComponent>("Env/VEMERALD.png", 1.5f);
+						go2->AddComponent<dae::TextureComponent>("Env/VEMERALD.png", 1.3f, glm::vec2{5,5});
 						go2->SetLocalPosition(goGrid->GetComponent<game::GridComponent>()->GetCellPosition(col, row));
 						go2->AddComponent<dae::ColliderComponent>(glm::vec2{ 10,10 }, glm::vec2{ 0,0 }, "Test");
 						go2->AddComponent<game::EmeraldComponent>(go2->GetComponent<dae::ColliderComponent>(), playerGameObj->GetComponent<game::ScoreComponent>());
@@ -176,6 +179,22 @@ void load()
 			}
 		}
 	}
+
+	auto npc1 = std::make_shared<dae::GameObject>();
+	npc1->AddComponent<game::MovementComponent>(goGrid->GetComponent<game::GridComponent>(), 100.f, glm::ivec2{ 14,0 });
+
+	npc1->AddComponent<dae::SpriteComponent>("Player/PlayerMovement.png", 1, 6, 0, 90.f);
+	npc1->AddComponent<dae::ColliderComponent>(glm::vec2(40, 40), glm::vec2(0, 0), "Enemy");
+	npc1->AddComponent<game::HealthComponent>();
+
+	npc1->AddComponent<game::Nobbin>(goGrid->GetComponent<game::GridComponent>()
+		, npc1->GetComponent<game::MovementComponent>()
+		, playerGameObj->GetComponent<game::PlayerComponent>()
+		, playerGameObj->GetComponent<game::ScoreComponent>()
+		, npc1->GetComponent<game::HealthComponent>());
+
+	scene.Add(npc1);
+
 	//auto go2 = std::make_shared<dae::GameObject>();
 
 	//go2->AddComponent<dae::TextureComponent>("Env/VEMERALD.png", 1.5f);

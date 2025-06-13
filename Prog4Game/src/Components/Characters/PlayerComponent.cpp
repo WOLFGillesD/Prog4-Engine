@@ -1,5 +1,7 @@
 #include "PlayerComponent.h"
 
+#include <iostream>
+
 #include "DaeTime.h"
 
 namespace game
@@ -34,6 +36,11 @@ namespace game
 		
 	}
 
+	void PlayerComponent::OnHealthChanged(int newHealth)
+	{
+		std::cout << "Health: " << newHealth << std::endl;
+	}
+
 	//MoveCommand::MoveCommand(PlayerComponent* pActor, const glm::vec2& inputDirection)
 	//	: m_pActor(pActor), m_InputDirection(inputDirection)
 	//{
@@ -48,6 +55,11 @@ namespace game
 	void MoveCommand::Execute()
 	{
 		m_pMovementComponent->HandleInput(m_InputDirection);
+	}
+
+	void PlayerLivesComponent::Render() const
+	{
+		
 	}
 
 	MovementComponent::MovementComponent(dae::GameObject& go, GridComponent* grid, float speed, const glm::ivec2& startCell, bool canDig)
@@ -74,7 +86,7 @@ namespace game
 		// Compute current and next grid cells
 		glm::ivec2 currentCell = m_pGrid->GetCell(GetOwner()->GetWorldPosition());
 		glm::ivec2 nextCell = currentCell + glm::ivec2(dir);
-		if (!m_pGrid->IsCellValid(nextCell) || m_pGrid->IsObstacle(nextCell)) return;
+		if (!m_pGrid->IsCellValid(nextCell) || (m_pGrid->IsObstacle(nextCell) && !m_CanDig)) return;
 
 		if (m_CanDig)
 		{
@@ -117,7 +129,7 @@ namespace game
 
 	bool MovementComponent::IsCellWalkable(const glm::ivec2& cell) const
 	{
-		return m_pGrid->IsCellValid(cell) && !m_pGrid->IsObstacle(cell);
+		return m_pGrid->IsCellValid(cell) && (!m_pGrid->IsObstacle(cell) || m_CanDig);
 	}
 
 	void MoveState::OnEnter()

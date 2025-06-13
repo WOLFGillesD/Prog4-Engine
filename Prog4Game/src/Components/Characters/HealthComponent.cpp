@@ -4,14 +4,14 @@
 
 #include "TextComponent.h"
 
-dae::HealthComponent::HealthComponent(GameObject& go,int startLives, int maxLives)
+game::HealthComponent::HealthComponent(dae::GameObject& go,int startLives, int maxLives)
 	: Component(go)
 	, m_CurrentLives(startLives)
 	, m_MaxLives(maxLives)
 {
 }
 
-void dae::HealthComponent::Die()
+void game::HealthComponent::Die()
 {
 	if (m_CurrentLives <= 0)
 	{
@@ -22,33 +22,33 @@ void dae::HealthComponent::Die()
 	m_OnDie->Trigger(m_CurrentLives);
 }
 
-void dae::HealthComponent::AddLive(int amount)
+void game::HealthComponent::AddLive(int amount)
 {
 	m_CurrentLives += amount;
 	m_CurrentLives = std::clamp(m_CurrentLives, 0, m_MaxLives);
 }
 
-int dae::HealthComponent::GetLives() const
+int game::HealthComponent::GetLives() const
 {
 	return m_CurrentLives;
 }
 
-dae::HealthObserver::HealthObserver(TextComponent* txtComponent)
+game::HealthObserver::HealthObserver(dae::TextComponent* txtComponent)
 	: m_TextIndicator(txtComponent)
 {
 }
 
-void dae::HealthObserver::Trigger(int newLifeCount)
+void game::HealthObserver::Trigger(int newLifeCount)
 {
 	m_TextIndicator->SetText("# Lives: " + std::to_string(newLifeCount));
 }
 
-dae::DieCommand::DieCommand(HealthComponent* hc)
+game::DieCommand::DieCommand(HealthComponent* hc)
 	:m_hc(hc)
 {
 }
 
-void dae::DieCommand::Execute()
+void game::DieCommand::Execute()
 {
 	m_hc->Die();
 }

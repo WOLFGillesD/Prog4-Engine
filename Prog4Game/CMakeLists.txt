@@ -14,7 +14,8 @@ set(GAME_SOURCE
     "src/Components/Score/ScoreComponent.cpp"
     "src/Components/GridComponent.cpp" 
     "src/Components/States.h"
-    "src/Components/Characters/PlayerComponent.cpp")
+    "src/Components/Characters/PlayerComponent.cpp"
+    "src/Components/Characters/NPCComponents.cpp")
 
 set(GAME_INCL
     "src/Components"
