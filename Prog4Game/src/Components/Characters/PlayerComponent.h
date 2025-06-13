@@ -15,7 +15,7 @@ namespace game
 	class MovementComponent final : public dae::Component
 	{
     public:
-        MovementComponent(dae::GameObject& go, GridComponent* grid, float speed, bool canDig = true, const glm::ivec2& startCell = {0,0} );
+        MovementComponent(dae::GameObject& go, GridComponent* grid, float speed, const glm::ivec2& startCell = { 0,0 }, bool canDig = true);
 
         void Update() override;
 

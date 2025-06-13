@@ -50,7 +50,7 @@ namespace game
 		m_pMovementComponent->HandleInput(m_InputDirection);
 	}
 
-	MovementComponent::MovementComponent(dae::GameObject& go, GridComponent* grid, float speed, bool canDig, const glm::ivec2& startCell)
+	MovementComponent::MovementComponent(dae::GameObject& go, GridComponent* grid, float speed, const glm::ivec2& startCell, bool canDig)
 		: Component(go)
 		, m_pGrid(grid)
 		, m_Movespeed(speed)

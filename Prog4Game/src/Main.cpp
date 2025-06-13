@@ -78,7 +78,7 @@ void load()
 	scene.Add(goGrid);
 
 	auto playerGameObj = std::make_shared<dae::GameObject>();
-	playerGameObj->AddComponent<game::MovementComponent>(goGrid->GetComponent<game::GridComponent>(), 100.f);
+	playerGameObj->AddComponent<game::MovementComponent>(goGrid->GetComponent<game::GridComponent>(), 100.f, glm::ivec2{7,9});
 
 	playerGameObj->AddComponent<dae::SpriteComponent>("Player/PlayerMovement.png", 1, 6, 0, 90.f);
 	playerGameObj->AddComponent<dae::ColliderComponent>(glm::vec2(40, 40), glm::vec2(0, 0), "Player");
@@ -112,23 +112,87 @@ void load()
 
 	scene.Add(playerGameObj);
 
-	auto go2 = std::make_shared<dae::GameObject>();
+	// Add all the players
+	{
+		auto csvData = dae::ResourceManager::GetInstance().LoadCSV("Levels/LVL_00.csv");
 
-	go2->AddComponent<dae::TextureComponent>("Env/VEMERALD.png", 1.5f);
-	go2->SetLocalPosition(goGrid->GetComponent<game::GridComponent>()->GetCellPosition(5, 5));
-	go2->AddComponent<dae::ColliderComponent>(glm::vec2{ 10,10 }, glm::vec2{0,0}, "Test");
-	go2->AddComponent<game::EmeraldComponent>(go2->GetComponent<dae::ColliderComponent>(), playerGameObj->GetComponent<game::ScoreComponent>());
-	scene.Add(go2);
+		std::stringstream ss(csvData);
+		std::string line;
+		std::vector<std::vector<int>> parsedGrid;
 
-	go2 = std::make_shared<dae::GameObject>();
+		while (std::getline(ss, line))
+		{
+			if (line.empty())
+				continue;
 
-	go2->AddComponent<dae::TextureComponent>("Env/VFBAG.png");
-	go2->SetLocalPosition(goGrid->GetComponent<game::GridComponent>()->GetCellPosition(5, 1));
-	go2->AddComponent<dae::ColliderComponent>(glm::vec2{ 20,20 }, glm::vec2{ 0,0 }, "Test");
-	go2->AddComponent<game::BagComponent>(goGrid->GetComponent<game::GridComponent>()
-										, go2->GetComponent<dae::ColliderComponent>()
-										, playerGameObj->GetComponent<game::ScoreComponent>());
-	scene.Add(go2);
+			std::stringstream lineStream(line);
+			std::string cellStr;
+			std::vector<int> rowValues;
+
+			while (std::getline(lineStream, cellStr, ';'))
+			{
+				// Remove whitespace
+				cellStr.erase(std::remove_if(cellStr.begin(), cellStr.end(), isspace), cellStr.end());
+
+				if (cellStr.empty())
+					rowValues.push_back(0); // Treat empty as 0
+				else
+					rowValues.push_back(std::stoi(cellStr));
+			}
+
+			parsedGrid.push_back(std::move(rowValues));
+		}
+
+		for (int row = 0; row < goGrid->GetComponent<game::GridComponent>()->GetRows(); ++row)
+		{
+			for (int col = 0; col < goGrid->GetComponent<game::GridComponent>()->GetColumns(); ++col)
+			{
+				int value = parsedGrid[row][col];
+				switch (value)
+				{
+				case 2:
+					{
+						auto go2 = std::make_shared<dae::GameObject>();
+						go2->AddComponent<dae::TextureComponent>("Env/VEMERALD.png", 1.5f);
+						go2->SetLocalPosition(goGrid->GetComponent<game::GridComponent>()->GetCellPosition(col, row));
+						go2->AddComponent<dae::ColliderComponent>(glm::vec2{ 10,10 }, glm::vec2{ 0,0 }, "Test");
+						go2->AddComponent<game::EmeraldComponent>(go2->GetComponent<dae::ColliderComponent>(), playerGameObj->GetComponent<game::ScoreComponent>());
+						scene.Add(go2);
+					}
+					break;
+				case 3:
+					{
+						auto go2 = std::make_shared<dae::GameObject>();
+						go2->AddComponent<dae::TextureComponent>("Env/VFBAG.png");
+						go2->SetLocalPosition(goGrid->GetComponent<game::GridComponent>()->GetCellPosition(col, row));
+						go2->AddComponent<dae::ColliderComponent>(glm::vec2{ 20,20 }, glm::vec2{ 0,0 }, "Test");
+						go2->AddComponent<game::BagComponent>(goGrid->GetComponent<game::GridComponent>()
+							, go2->GetComponent<dae::ColliderComponent>()
+							, playerGameObj->GetComponent<game::ScoreComponent>());
+						scene.Add(go2);
+					}
+					break;
+				}
+			}
+		}
+	}
+	//auto go2 = std::make_shared<dae::GameObject>();
+
+	//go2->AddComponent<dae::TextureComponent>("Env/VEMERALD.png", 1.5f);
+	//go2->SetLocalPosition(goGrid->GetComponent<game::GridComponent>()->GetCellPosition(5, 5));
+	//go2->AddComponent<dae::ColliderComponent>(glm::vec2{ 10,10 }, glm::vec2{0,0}, "Test");
+	//go2->AddComponent<game::EmeraldComponent>(go2->GetComponent<dae::ColliderComponent>(), playerGameObj->GetComponent<game::ScoreComponent>());
+	//scene.Add(go2);
+
+	//go2 = std::make_shared<dae::GameObject>();
+
+	//go2->AddComponent<dae::TextureComponent>("Env/VFBAG.png");
+	//go2->SetLocalPosition(goGrid->GetComponent<game::GridComponent>()->GetCellPosition(5, 1));
+	//go2->AddComponent<dae::ColliderComponent>(glm::vec2{ 20,20 }, glm::vec2{ 0,0 }, "Test");
+	//go2->AddComponent<game::BagComponent>(goGrid->GetComponent<game::GridComponent>()
+	//									, go2->GetComponent<dae::ColliderComponent>()
+	//									, playerGameObj->GetComponent<game::ScoreComponent>());
+	//scene.Add(go2);
 
 	//// AUDIO
 

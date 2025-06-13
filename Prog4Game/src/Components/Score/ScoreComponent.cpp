@@ -121,6 +121,10 @@ void game::BagComponent::Update()
             {
                 Land();
             }
+            else if (!m_pGrid->IsCellValid(below))
+            {
+                Land();
+            }
         }
         break;
 
