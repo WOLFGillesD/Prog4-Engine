@@ -173,7 +173,9 @@ void game::GridComponent::Cell::DigTunnel(const glm::vec2& direction)
 void game::GridComponent::DigTunnel(const glm::ivec2& cell, const glm::vec2& direction)
 {
 	if (!IsCellValid(cell)) return;
-	m_Cells[cell.y * m_Columns + cell.x].DigTunnel(direction);
+	int cellIndex{ cell.y * m_Columns + cell.x };
+	m_Cells[cellIndex].DigTunnel(direction);
+	m_Cells[cellIndex].state = Cell::State::Empty;
 }
 
 bool game::GridComponent::LoadFromCSV(const std::string& csvData)

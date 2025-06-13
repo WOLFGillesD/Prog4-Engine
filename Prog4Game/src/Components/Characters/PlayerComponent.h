@@ -3,14 +3,15 @@
 #include "Component.h"
 #include "Command.h"
 #include "DaeTime.h"
+#include "Event.h"
 #include "States.h"
 #include "GridComponent.h"
 #include "Renderer.h"
+#include "ScoreComponent.h"
+#include "TextComponent.h"
 
 namespace game
 {
-	class PlayerComponent;
-
 	class MovementComponent final : public dae::Component
 	{
     public:
@@ -59,28 +60,24 @@ namespace game
     class PlayerComponent final : public dae::Component
     {
     public:
-        PlayerComponent(dae::GameObject& go, GridComponent* pGrid, MovementComponent* pMovementComponent)
+        PlayerComponent(dae::GameObject& go, GridComponent* pGrid, MovementComponent* pMovementComponent, dae::TextComponent* pTxtComp, game::ScoreComponent* pScoreComponent)
             : Component(go)
 			, movementState{ pMovementComponent }
             , m_pGrid{ pGrid }
+			, m_ScoreObserver(std::make_unique<game::ScoreObserver>(pTxtComp))
         {
             ChangeState(&movementState);
+			pScoreComponent->OnScoreChanged()->AddObserver(m_ScoreObserver.get());
         }
 
         void ChangeState(IState* newState);
         void Update() override;
-        void Render() const override
-        {
-            SDL_SetRenderDrawColor(dae::Renderer::GetInstance().GetSDLRenderer(), 0, 255, 255, 255);
-
-            SDL_Rect rect{ static_cast<int>(GetOwner()->GetWorldPosition().x), static_cast<int>(GetOwner()->GetWorldPosition().y), 20, 20};
-            SDL_RenderFillRect(dae::Renderer::GetInstance().GetSDLRenderer(), &rect);
-        }
 
     	MoveState   movementState;
         IState*     currentState{ nullptr };
 		MovementComponent* m_pMovementComponent;
     private:
+		std::unique_ptr<ScoreObserver> m_ScoreObserver;
 
         GridComponent* m_pGrid;
     };

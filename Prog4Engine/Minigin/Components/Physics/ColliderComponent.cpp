@@ -35,7 +35,7 @@ void dae::ColliderComponent::Update()
         if (IsColliding(*other))
         {
             if (m_Callback) m_Callback(*other);
-            if (other->m_Callback) other->m_Callback(*this);
+            //if (other->m_Callback) other->m_Callback(*this);  // Don't need this bc update will make sure the other one also gets called.
         }
     }
 }

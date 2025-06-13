@@ -14,41 +14,41 @@ namespace game
 	{
 		int m_score{};
 
-		std::unique_ptr<Event<dae::GameObject*>> m_OnScoreChange{ std::make_unique<Event<dae::GameObject*>>() };
+		std::unique_ptr<Event<int>> m_OnScoreChange{ std::make_unique<Event<int>>() };
 	public:
 		ScoreComponent(dae::GameObject& go);
 		void AddScore(int amount);
 		void RemoveScore(int amount);
 
 		int GetScore() const;
-		Event<dae::GameObject*>* OnScoreChanged() const;
+		Event<int>* OnScoreChanged() const;
 	};
 
-	class ScoreObserver : public BaseObserver<dae::GameObject*>
+	class ScoreObserver : public BaseObserver<int>
 	{
 		dae::TextComponent* m_TextIndicator{};
 	public:
 		ScoreObserver(dae::TextComponent* txtComponent);
 
-		void Trigger(dae::GameObject* actor) override;
+		void Trigger(int newScore) override;
 	};
 
-	class UpScoreCommand : public dae::Command
-	{
-		ScoreComponent* m_sc;
-		int m_scoreIncrease;
+	//class UpScoreCommand : public dae::Command
+	//{
+	//	ScoreComponent* m_sc;
+	//	int m_scoreIncrease;
 
-	public:
-		UpScoreCommand(ScoreComponent* sc, int scoreIncrease);
+	//public:
+	//	UpScoreCommand(ScoreComponent* sc, int scoreIncrease);
 
-		void Execute() override;
-	};
+	//	void Execute() override;
+	//};
 
 
 	class DiamondComponent : public dae::Component
 	{
 	public:
-		DiamondComponent(dae::GameObject& go, dae::ColliderComponent* pCollider);
+		DiamondComponent(dae::GameObject& go, dae::ColliderComponent* pCollider, ScoreComponent* pScoreComponent);
 		~DiamondComponent() override = default;
 
 		DiamondComponent(const DiamondComponent&) = delete;
@@ -56,9 +56,13 @@ namespace game
 		DiamondComponent& operator=(const DiamondComponent&) = delete;
 		DiamondComponent& operator=(DiamondComponent&&) noexcept = delete;
 
+		ScoreComponent* m_pScore;
+
 		void Update() override;
 
 	private:
+		const int m_ScoreValue{ 25 };
+
 		dae::ColliderComponent* m_pCollider;
 		void OnCollide(dae::ColliderComponent& other);
 	};
@@ -68,7 +72,7 @@ namespace game
 	public:
 		enum class State { Static, Falling, Pickupable, Destroyed };
 
-		BagComponent(dae::GameObject& go, GridComponent& grid, dae::ColliderComponent* pCollider);
+		BagComponent(dae::GameObject& go, GridComponent* grid, dae::ColliderComponent* pCollider, ScoreComponent* pScoreComponent);
 		~BagComponent() override = default;
 
 		BagComponent(const BagComponent&) = delete;
@@ -84,9 +88,11 @@ namespace game
 
 	private:
 		dae::ColliderComponent* m_Collider;
-		GridComponent& m_Grid;
+		GridComponent* m_pGrid;
 		State m_State{ State::Static };
 		glm::ivec2 m_Cell;
+
+		ScoreComponent* m_pScore;
 
 		void CheckGridBelow();
 		void StartFalling();

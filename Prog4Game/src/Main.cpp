@@ -67,43 +67,68 @@ void load()
 	go->SetLocalPosition(20, 80);
 	scene.Add(go);
 
+	auto scoreIndicator = std::make_shared<dae::GameObject>();
+	scoreIndicator->AddComponent<dae::TextComponent>("AAA", font2);
+	scoreIndicator->SetLocalPosition(10, 10);
+	scene.Add(scoreIndicator);
+
 	auto goGrid = std::make_shared<dae::GameObject>();
 	goGrid->AddComponent<game::GridComponent>(10, 15, 40, glm::vec2{20, 80});
+	scene.Add(goGrid);
 
-	auto go2 = std::make_shared<dae::GameObject>();
-	go2->AddComponent<game::MovementComponent>(goGrid->GetComponent<game::GridComponent>(), 100.f);
+	auto playerGameObj = std::make_shared<dae::GameObject>();
+	playerGameObj->AddComponent<game::MovementComponent>(goGrid->GetComponent<game::GridComponent>(), 100.f);
 
-	go2->AddComponent<dae::SpriteComponent>("Player/PlayerMovement.png", 1, 6, 0, 90.f);
-	go2->AddComponent<dae::ColliderComponent>(glm::vec2(40, 40), glm::vec2(0, 0), "Player");
+	playerGameObj->AddComponent<dae::SpriteComponent>("Player/PlayerMovement.png", 1, 6, 0, 90.f);
+	playerGameObj->AddComponent<dae::ColliderComponent>(glm::vec2(40, 40), glm::vec2(0, 0), "Player");
+	playerGameObj->AddComponent<game::ScoreComponent>();
 
-	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_UP), dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::MovementComponent>(), glm::vec2(0,-1)) });
-	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_DOWN), dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::MovementComponent>(), glm::vec2(0,1)) });
-	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_LEFT), dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::MovementComponent>(), glm::vec2(-1,0)) });
-	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_RIGHT), dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::MovementComponent>(), glm::vec2(1,0)) });
+	//auto scoreObserver = std::make_unique<game::ScoreObserver>(scoreIndicator->GetComponent<dae::TextComponent>());
+	//playerGameObj->GetComponent<game::ScoreComponent>()->OnScoreChanged()->AddObserver(scoreObserver.get());
 
-	imk->AddCommand(SDLK_w, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::MovementComponent>(), glm::vec2(0,-1)), dae::InputState::IsPressed });
+	playerGameObj->AddComponent<game::PlayerComponent>(goGrid->GetComponent<game::GridComponent>()
+														, goGrid->GetComponent<game::MovementComponent>()
+														,scoreIndicator->GetComponent<dae::TextComponent>()
+														, playerGameObj->GetComponent<game::ScoreComponent>());
+	//eventManager.AddObserver(std::move(scoreObserver));
+
+	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_UP), dae::InputCommand{ new game::MoveCommand(playerGameObj->GetComponent<game::MovementComponent>(), glm::vec2(0,-1)) });
+	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_DOWN), dae::InputCommand{ new game::MoveCommand(playerGameObj->GetComponent<game::MovementComponent>(), glm::vec2(0,1)) });
+	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_LEFT), dae::InputCommand{ new game::MoveCommand(playerGameObj->GetComponent<game::MovementComponent>(), glm::vec2(-1,0)) });
+	imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_RIGHT), dae::InputCommand{ new game::MoveCommand(playerGameObj->GetComponent<game::MovementComponent>(), glm::vec2(1,0)) });
+
+	imk->AddCommand(SDLK_w, dae::InputCommand{ new game::MoveCommand(playerGameObj->GetComponent<game::MovementComponent>(), glm::vec2(0,-1)), dae::InputState::IsPressed });
 	//imk->AddCommand(SDLK_w, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,0)), dae::InputState::IsUp });
 
-	imk->AddCommand(SDLK_s, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::MovementComponent>(), glm::vec2(0,1)), dae::InputState::IsPressed });
+	imk->AddCommand(SDLK_s, dae::InputCommand{ new game::MoveCommand(playerGameObj->GetComponent<game::MovementComponent>(), glm::vec2(0,1)), dae::InputState::IsPressed });
 	//imk->AddCommand(SDLK_s, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,0)), dae::InputState::IsUp });
 
-	imk->AddCommand(SDLK_a, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::MovementComponent>(), glm::vec2(-1,0)), dae::InputState::IsPressed });
+	imk->AddCommand(SDLK_a, dae::InputCommand{ new game::MoveCommand(playerGameObj->GetComponent<game::MovementComponent>(), glm::vec2(-1,0)), dae::InputState::IsPressed });
 	//imk->AddCommand(SDLK_a, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,0)), dae::InputState::IsUp });
 
-	imk->AddCommand(SDLK_d, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::MovementComponent>(), glm::vec2(1,0)), dae::InputState::IsPressed });
+	imk->AddCommand(SDLK_d, dae::InputCommand{ new game::MoveCommand(playerGameObj->GetComponent<game::MovementComponent>(), glm::vec2(1,0)), dae::InputState::IsPressed });
 	//imk->AddCommand(SDLK_d, dae::InputCommand{ new game::MoveCommand(go2->GetComponent<game::PlayerComponent>(), glm::vec2(0,0)), dae::InputState::IsUp });
 
+	scene.Add(playerGameObj);
+
+	auto go2 = std::make_shared<dae::GameObject>();
+
+	go2->AddComponent<dae::TextureComponent>("VRHOB1.png");
+	go2->SetLocalPosition(goGrid->GetComponent<game::GridComponent>()->GetCellPosition(5, 5));
+	go2->AddComponent<dae::ColliderComponent>(glm::vec2{ 10,10 }, glm::vec2{0,0}, "Test");
+	go2->AddComponent<game::DiamondComponent>(go2->GetComponent<dae::ColliderComponent>(), playerGameObj->GetComponent<game::ScoreComponent>());
 	scene.Add(go2);
 
 	go2 = std::make_shared<dae::GameObject>();
 
 	go2->AddComponent<dae::TextureComponent>("VRHOB1.png");
-	go2->SetLocalPosition(goGrid->GetComponent<game::GridComponent>()->GetCellPosition(5, 5));
-	go2->AddComponent<dae::ColliderComponent>(glm::vec2{ 10,10 }, glm::vec2{0,0}, "Test");
-	go2->AddComponent<game::DiamondComponent>(go2->GetComponent<dae::ColliderComponent>());
+	go2->SetLocalPosition(goGrid->GetComponent<game::GridComponent>()->GetCellPosition(5, 1));
+	go2->AddComponent<dae::ColliderComponent>(glm::vec2{ 20,20 }, glm::vec2{ 0,0 }, "Test");
+	go2->AddComponent<game::BagComponent>(goGrid->GetComponent<game::GridComponent>()
+										, go2->GetComponent<dae::ColliderComponent>()
+										, playerGameObj->GetComponent<game::ScoreComponent>());
 	scene.Add(go2);
 
-	scene.Add(goGrid);
 	//// AUDIO
 
 	//// ----- Sound Service logger

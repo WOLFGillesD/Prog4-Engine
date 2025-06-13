@@ -68,21 +68,17 @@ public:
 	Event& operator=(const Event& other) = delete;
 	Event& operator=(Event&& other) noexcept = delete;
 
-	void operator+=(Observer<Args...>* observer) { AddObserver(observer); }
-	void operator-=(Observer<Args...>* observer) { RemoveObserver(observer); }
+	void operator+=(BaseObserver<Args...>* observer) { AddObserver(observer); }
+	void operator-=(BaseObserver<Args...>* observer) { RemoveObserver(observer); }
 	void operator()(Args... args) { Trigger(args...); }
 
-	void AddObserver(Observer<Args...>* observer)
+	void AddObserver(BaseObserver<Args...>* observer)
 	{
 		if (!observer) return;
-
-		auto result = m_pObservers.push_back(observer);
-		
-		if (result.second)
-			observer->AddEvent(this);
+		m_pObservers.push_back(observer);
 	}
 
-	void RemoveObserver(Observer<Args...>* observer)
+	void RemoveObserver(BaseObserver<Args...>* observer)
 	{
 		if (!observer) return;
 		if (m_pObservers.empty()) return;
@@ -102,5 +98,5 @@ public:
 	}
 
 private:
-	std::vector<Observer<Args...>*> m_pObservers{};
+	std::vector<BaseObserver<Args...>*> m_pObservers{};
 };
