@@ -73,7 +73,7 @@ void load()
 	scene.Add(scoreIndicator);
 
 	auto goGrid = std::make_shared<dae::GameObject>();
-	goGrid->AddComponent<game::GridComponent>(10, 15, 40, glm::vec2{20, 80});
+	goGrid->AddComponent<game::GridComponent>(10, 15, 40, "Env/VBACK1.png", glm::vec2{20, 80});
 	goGrid->GetComponent<game::GridComponent>()->LoadFromCSV("Levels/LVL_00.csv");
 	scene.Add(goGrid);
 

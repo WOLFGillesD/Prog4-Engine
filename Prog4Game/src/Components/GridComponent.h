@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -40,10 +41,11 @@ namespace game
 				Bag,
 			};
 
-			Cell(GridComponent* pGrid, int cellIndex, int cellWidth)
+			Cell(GridComponent* pGrid, std::shared_ptr<dae::Texture2D> texture,int cellIndex, int cellWidth)
 				: m_CellWidth{ cellWidth }
 				, cellIndex{ cellIndex }
 				, m_pGrid{ pGrid }
+				, m_Texture2D(texture)
 			{
 				const int subCellCount = 25; // 5x5 grid of subcells
 				m_SubCellWidth = m_CellWidth / 5;
@@ -64,11 +66,13 @@ namespace game
 					if (subCell.m_SubState == SubCell::SubState::Terrain)
 					{
 						auto parentOffset = m_pGrid->GetCellPosition(cellIndex) + glm::vec2{2,2};
-						int subCellWidth = m_SubCellWidth / 5 - 4;
+						int subCellWidth = m_SubCellWidth;
 						int subCellOffsetX = m_SubCellWidth * (index % 5);
 						int subCellOffsetY = m_SubCellWidth * (index / 5);
 						auto rect = SDL_Rect{ static_cast<int>(parentOffset.x) + subCellOffsetX, static_cast<int>(parentOffset.y) + subCellOffsetY, subCellWidth, subCellWidth };
-						SDL_RenderFillRect(dae::Renderer::GetInstance().GetSDLRenderer(), &rect);
+
+						dae::Renderer::GetInstance().RenderTexture(*m_Texture2D, static_cast<float>(rect.x), static_cast<float>(rect.y), static_cast<float>(rect.w), static_cast<float>(rect.h));
+						//SDL_RenderFillRect(dae::Renderer::GetInstance().GetSDLRenderer(), &rect);
 					}
 
 					//auto rect = SDL_Rect{ 0, 0, static_cast<int>(m_CellWidth), static_cast<int>(m_CellWidth) };
@@ -90,9 +94,11 @@ namespace game
 
 			int m_CellWidth{};
 			int m_SubCellWidth{};
+
+			std::shared_ptr<dae::Texture2D> m_Texture2D{};
 		};
 
-		GridComponent(dae::GameObject& go, int rows, int columns, int cellSize, const glm::vec2& offset = {0,0} );
+		GridComponent(dae::GameObject& go, int rows, int columns, int cellSize, const std::string& subCellTexturePath, const glm::vec2& offset = {0,0} );
 
 		Cell::State GetCellState(int column, int row) const;
 		Cell::State GetCellState(int index) const;

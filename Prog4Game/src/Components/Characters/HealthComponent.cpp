@@ -15,11 +15,11 @@ void dae::HealthComponent::Die()
 {
 	if (m_CurrentLives <= 0)
 	{
-		m_OnDeath->Trigger(GetOwner());
+		m_OutOfLives->Trigger();
 		return;
 	}
 	--m_CurrentLives;
-	m_OnDie->Trigger(GetOwner());
+	m_OnDie->Trigger(m_CurrentLives);
 }
 
 void dae::HealthComponent::AddLive(int amount)
@@ -28,7 +28,7 @@ void dae::HealthComponent::AddLive(int amount)
 	m_CurrentLives = std::clamp(m_CurrentLives, 0, m_MaxLives);
 }
 
-int dae::HealthComponent::GetLives()
+int dae::HealthComponent::GetLives() const
 {
 	return m_CurrentLives;
 }
@@ -38,9 +38,9 @@ dae::HealthObserver::HealthObserver(TextComponent* txtComponent)
 {
 }
 
-void dae::HealthObserver::Trigger(GameObject* actor)
+void dae::HealthObserver::Trigger(int newLifeCount)
 {
-	m_TextIndicator->SetText("# Lives: " + std::to_string(actor->GetComponent<HealthComponent>()->GetLives()));
+	m_TextIndicator->SetText("# Lives: " + std::to_string(newLifeCount));
 }
 
 dae::DieCommand::DieCommand(HealthComponent* hc)

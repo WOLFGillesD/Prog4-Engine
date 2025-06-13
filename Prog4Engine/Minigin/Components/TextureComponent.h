@@ -30,14 +30,22 @@ namespace dae
     class SpriteComponent : public Component
     {
     public:
-        explicit SpriteComponent(GameObject& go, const std::string& fullPath, int rows, int columns, int index = 0, float rotation = 0.f);
+        explicit SpriteComponent(GameObject& go, const std::string& fullPath, int rows, int columns, int index = 0, float rotation = 0.f, bool isAnimated = true);
         ~SpriteComponent() override = default;
 
         void Update() override;
         void Render() const override;
+
         void SetIndex(int index);
         int GetIndex() const { return m_Index; }
-        void SetAnimationSpeed(float fps) { m_AnimSpeed = fps; }
+
+        void SetIsAnimated(bool state) { m_IsAnimated = state; }
+
+        void SetAnimationSpeed(float fps)
+        {
+            if (fps < 0.001f) fps = 0.001f;
+            m_AnimSpeed = fps;
+        }
         void SetRotation(float angle) { m_Rotation = angle; }
 
     private:
@@ -51,6 +59,8 @@ namespace dae
         float m_ElapsedTime = 0.0f;
         float m_AnimSpeed = 10.0f; // frames per second
         float m_Rotation = 0.0f;   // rotation in degrees
+
+        bool m_IsAnimated{};
 
         SDL_Rect m_SourceRect;
         std::shared_ptr<Texture2D> m_Texture;

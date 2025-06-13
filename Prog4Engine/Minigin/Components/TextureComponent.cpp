@@ -19,12 +19,13 @@ void dae::TextureComponent::Render() const
 	                                      m_Scale * static_cast<float>(m_Texture2D->GetSize().y));
 }
 
-dae::SpriteComponent::SpriteComponent(GameObject& go, const std::string& fullPath, int rows, int columns, int index, float rotation)
+dae::SpriteComponent::SpriteComponent(GameObject& go, const std::string& fullPath, int rows, int columns, int index, float rotation, bool isAnimated)
     : Component(go)
     , m_Rows(rows)
     , m_Columns(columns)
     , m_Index(index)
     , m_Rotation(rotation)
+	, m_IsAnimated(isAnimated)
 {
     m_Texture = ResourceManager::GetInstance().LoadTexture(fullPath);
     int texW, texH;
@@ -36,6 +37,7 @@ dae::SpriteComponent::SpriteComponent(GameObject& go, const std::string& fullPat
 
 void dae::SpriteComponent::Update()
 {
+    if (!m_IsAnimated) return;
     m_ElapsedTime += Time::m_DeltaTime;
 
     const float timePerFrame = 1.0f / m_AnimSpeed;

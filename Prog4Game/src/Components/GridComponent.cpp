@@ -9,20 +9,21 @@
 #include "ResourceManager.h"
 #include "SDL_render.h"
 
-game::GridComponent::GridComponent(dae::GameObject& go, int rows, int columns, int cellSize, const glm::vec2& offset)
+game::GridComponent::GridComponent(dae::GameObject& go, int rows, int columns, int cellSize, const std::string& subCellTexturePath, const glm::vec2& offset)
 	: dae::Component(go)
 	, m_Rows(rows)
 	, m_Columns(columns)
 	, m_CellSize(cellSize)
 	, m_Offset(offset)
 {
+	auto pTexture2D = dae::ResourceManager::GetInstance().LoadTexture(subCellTexturePath);
 	//m_Cells.resize(rows * columns);
 	for (int row = 0; row < rows; ++row)
 	{
 		for (int column = 0; column < columns; ++column)
 		{
 			int index = row * columns + column;
-			m_Cells.push_back(Cell{this, index, m_CellSize });
+			m_Cells.push_back(Cell{this, pTexture2D, index, m_CellSize });
 		}
 		GetOwner()->SetDepthIndex(1);
 	}
