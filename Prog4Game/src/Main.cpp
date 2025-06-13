@@ -114,15 +114,15 @@ void load()
 
 	auto go2 = std::make_shared<dae::GameObject>();
 
-	go2->AddComponent<dae::TextureComponent>("VRHOB1.png");
+	go2->AddComponent<dae::TextureComponent>("Env/VEMERALD.png", 1.5f);
 	go2->SetLocalPosition(goGrid->GetComponent<game::GridComponent>()->GetCellPosition(5, 5));
 	go2->AddComponent<dae::ColliderComponent>(glm::vec2{ 10,10 }, glm::vec2{0,0}, "Test");
-	go2->AddComponent<game::DiamondComponent>(go2->GetComponent<dae::ColliderComponent>(), playerGameObj->GetComponent<game::ScoreComponent>());
+	go2->AddComponent<game::EmeraldComponent>(go2->GetComponent<dae::ColliderComponent>(), playerGameObj->GetComponent<game::ScoreComponent>());
 	scene.Add(go2);
 
 	go2 = std::make_shared<dae::GameObject>();
 
-	go2->AddComponent<dae::TextureComponent>("VRHOB1.png");
+	go2->AddComponent<dae::TextureComponent>("Env/VFBAG.png");
 	go2->SetLocalPosition(goGrid->GetComponent<game::GridComponent>()->GetCellPosition(5, 1));
 	go2->AddComponent<dae::ColliderComponent>(glm::vec2{ 20,20 }, glm::vec2{ 0,0 }, "Test");
 	go2->AddComponent<game::BagComponent>(goGrid->GetComponent<game::GridComponent>()

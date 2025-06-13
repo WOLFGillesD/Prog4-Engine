@@ -45,16 +45,16 @@ namespace game
 	//};
 
 
-	class DiamondComponent : public dae::Component
+	class EmeraldComponent : public dae::Component
 	{
 	public:
-		DiamondComponent(dae::GameObject& go, dae::ColliderComponent* pCollider, ScoreComponent* pScoreComponent);
-		~DiamondComponent() override = default;
+		EmeraldComponent(dae::GameObject& go, dae::ColliderComponent* pCollider, ScoreComponent* pScoreComponent);
+		~EmeraldComponent() override = default;
 
-		DiamondComponent(const DiamondComponent&) = delete;
-		DiamondComponent(DiamondComponent&&) noexcept = delete;
-		DiamondComponent& operator=(const DiamondComponent&) = delete;
-		DiamondComponent& operator=(DiamondComponent&&) noexcept = delete;
+		EmeraldComponent(const EmeraldComponent&) = delete;
+		EmeraldComponent(EmeraldComponent&&) noexcept = delete;
+		EmeraldComponent& operator=(const EmeraldComponent&) = delete;
+		EmeraldComponent& operator=(EmeraldComponent&&) noexcept = delete;
 
 		ScoreComponent* m_pScore;
 

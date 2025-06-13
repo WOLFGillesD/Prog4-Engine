@@ -57,7 +57,7 @@ void game::ScoreObserver::Trigger(int newScore)
 //	m_sc->AddScore(m_scoreIncrease);
 //}
 
-game::DiamondComponent::DiamondComponent(dae::GameObject& go,dae::ColliderComponent* pCollider, ScoreComponent* pScoreComponent)
+game::EmeraldComponent::EmeraldComponent(dae::GameObject& go,dae::ColliderComponent* pCollider, ScoreComponent* pScoreComponent)
 	: Component(go)
 	, m_pCollider(pCollider)
 	, m_pScore(pScoreComponent)
@@ -65,12 +65,12 @@ game::DiamondComponent::DiamondComponent(dae::GameObject& go,dae::ColliderCompon
 	m_pCollider->SetCollisionCallback([this](dae::ColliderComponent& other) { OnCollide(other); });
 }
 
-void game::DiamondComponent::Update()
+void game::EmeraldComponent::Update()
 {
 	
 }
 
-void game::DiamondComponent::OnCollide(dae::ColliderComponent& /*other*/)
+void game::EmeraldComponent::OnCollide(dae::ColliderComponent& /*other*/)
 {
 	m_pScore->AddScore(m_ScoreValue);
 	GetOwner()->SetMarkForRemoval();

@@ -5,15 +5,18 @@
 #include "ResourceManager.h"
 #include "GameObject.h"
 
-dae::TextureComponent::TextureComponent(GameObject& go, const std::string& fullPath)
+dae::TextureComponent::TextureComponent(GameObject& go, const std::string& fullPath, float scale)
 	: Component(go)
+	, m_Scale(scale)
 {
 	m_Texture2D = ResourceManager::GetInstance().LoadTexture(fullPath);
 }
 
 void dae::TextureComponent::Render() const
 {
-	Renderer::GetInstance().RenderTexture(*m_Texture2D, GetOwner()->GetWorldTransform().GetPosition().x, GetOwner()->GetWorldTransform().GetPosition().y);
+	Renderer::GetInstance().RenderTexture(*m_Texture2D, GetOwner()->GetWorldTransform().GetPosition().x, GetOwner()->GetWorldTransform().GetPosition().y,
+	                                      m_Scale * static_cast<float>(m_Texture2D->GetSize().x),
+	                                      m_Scale * static_cast<float>(m_Texture2D->GetSize().y));
 }
 
 dae::SpriteComponent::SpriteComponent(GameObject& go, const std::string& fullPath, int rows, int columns, int index, float rotation)
