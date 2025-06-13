@@ -76,7 +76,7 @@ namespace game
 		glm::ivec2 nextCell = currentCell + glm::ivec2(dir);
 		if (!m_pGrid->IsCellValid(nextCell) || m_pGrid->IsObstacle(nextCell)) return;
 
-		if (m_pGrid->IsDirt(nextCell) && m_CanDig)
+		if (m_CanDig)
 		{
 			//m_pGrid->Dig(nextCell); // dig the path if needed
 			m_pGrid->DigTunnel(currentCell, dir);

@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "DaeTime.h"
+
 game::ScoreComponent::ScoreComponent(dae::GameObject& go)
 	: Component(go)
 {
@@ -78,11 +80,17 @@ void game::DiamondComponent::OnCollide(dae::ColliderComponent& /*other*/)
 Event<dae::GameObject&>& game::BagComponent::OnBagFall() { static Event<dae::GameObject&> e; return e; }
 Event<dae::GameObject&>& game::BagComponent::OnBagPickup() { static Event<dae::GameObject&> e; return e; }
 
-game::BagComponent::BagComponent(dae::GameObject& go, GridComponent* grid, dae::ColliderComponent* pCollider, ScoreComponent* pScoreComponent)
+game::BagComponent::BagComponent(dae::GameObject& go,
+                                 GridComponent* grid,
+                                 dae::ColliderComponent* pCollider,
+                                 ScoreComponent* pScoreComponent,
+                                 float fallDelay)
     : Component(go)
     , m_pGrid(grid)
-	, m_Collider(pCollider)
+    , m_Collider(pCollider)
     , m_pScore(pScoreComponent)
+    , m_FallDelay(fallDelay)
+    , m_DelayTimer(0.0f)
 {
     m_Collider->SetCollisionCallback([this](dae::ColliderComponent& other) { OnCollide(other); });
     m_Cell = m_pGrid->GetCell(GetOwner()->GetLocalPosition());
@@ -95,17 +103,30 @@ void game::BagComponent::Update()
     case State::Static:
         CheckGridBelow();
         break;
-    case State::Falling:
-        GetOwner()->SetLocalPosition(glm::vec2{ GetOwner()->GetLocalPosition() } + glm::vec2{ 0, 2 });
-        m_Cell = m_pGrid->GetCell(GetOwner()->GetLocalPosition());
-        if (m_pGrid->IsCellValid(m_Cell + glm::ivec2{ 0,1 }) &&
-            m_pGrid->GetCellState(m_Cell.x, m_Cell.y + 1) != GridComponent::Cell::State::Empty)
+
+    case State::Delaying:
+        m_DelayTimer -= dae::Time::m_DeltaTime;
+        if (m_DelayTimer <= 0.0f)
         {
-            Land();
+            StartFalling();
         }
         break;
+
+    case State::Falling:
+        GetOwner()->SetLocalPosition(glm::vec2{ GetOwner()->GetLocalPosition() } + glm::vec2{ 0, m_pGrid->GetCellSize() * 2 * dae::Time::m_DeltaTime });
+        m_Cell = m_pGrid->GetCell(GetOwner()->GetLocalPosition());
+        {
+            glm::ivec2 below = m_Cell + glm::ivec2{ 0,1 };
+            if (m_pGrid->IsCellValid(below) && m_pGrid->GetCellState(below.x, below.y) != GridComponent::Cell::State::Empty)
+            {
+                Land();
+            }
+        }
+        break;
+
     case State::Pickupable:
         break;
+
     case State::Destroyed:
         GetOwner()->SetMarkForRemoval();
         break;
@@ -114,43 +135,58 @@ void game::BagComponent::Update()
 
 void game::BagComponent::CheckGridBelow()
 {
-    auto below = m_Cell + glm::ivec2{ 0,1 };
+    glm::ivec2 below = m_Cell + glm::ivec2{ 0,1 };
     if (m_pGrid->IsCellValid(below) && m_pGrid->GetCellState(below.x, below.y) == GridComponent::Cell::State::Empty)
     {
-        StartFalling();
+        StartDelay();
     }
+}
+
+void game::BagComponent::StartDelay()
+{
+    m_State = State::Delaying;
+    m_DelayTimer = m_FallDelay;
+    m_StartFallCell = m_Cell;
 }
 
 void game::BagComponent::StartFalling()
 {
     m_State = State::Falling;
-    std::cout << "Bag started falling\n";
-    OnBagFall().Trigger(*GetOwner());  // Notify listeners
+    OnBagFall().Trigger(*GetOwner());
 }
 
 void game::BagComponent::Land()
 {
-    m_State = State::Static;
-    std::cout << "Bag landed\n";
+    int fallDistance = m_Cell.y - m_StartFallCell.y;
+    if (fallDistance > 1)
+    {
+        m_State = State::Pickupable;
+        OnBagPickup().Trigger(*GetOwner());
+    }
+    else
+    {
+        m_State = State::Static;
+    }
 }
 
 void game::BagComponent::OnCollide(dae::ColliderComponent& other)
 {
-    if (m_State == State::Falling)
+    if (m_State == State::Static)
     {
-        m_State = State::Pickupable;
-        OnBagFall().Trigger(*GetOwner());
+        float dir = (other.GetOwner()->GetLocalPosition().x < GetOwner()->GetLocalPosition().x) ? 1.0f : -1.0f;
+        GetOwner()->SetLocalPosition(glm::vec2{ GetOwner()->GetLocalPosition() } + glm::vec2{ m_pGrid->GetCellSize() * dir, 0 });
+        m_Cell = m_pGrid->GetCell(GetOwner()->GetLocalPosition());
     }
     else if (m_State == State::Pickupable)
     {
-        m_State = State::Destroyed;
-    }
-    else if (m_State == State::Static)
-    {
-        // Simple side push
-        auto dir = (other.GetOwner()->GetLocalPosition().x < GetOwner()->GetLocalPosition().x) ? 1 : -1;
-        GetOwner()->SetLocalPosition(glm::vec2{ GetOwner()->GetLocalPosition() } + glm::vec2{ 16 * dir, 0 });
-        m_Cell = m_pGrid->GetCell(GetOwner()->GetLocalPosition());
-        std::cout << "Bag pushed\n";
+		if (other.GetTag() == "Player")
+		{
+			m_pScore->AddScore(500);
+            GetOwner()->SetMarkForRemoval();
+		}
+        else if (other.GetTag() == "Enemy")
+        {
+            GetOwner()->SetMarkForRemoval();
+        }
     }
 }

@@ -149,7 +149,6 @@ glm::ivec2 game::GridComponent::GetCell(const glm::vec2& pos) const
 	return glm::ivec2{ static_cast<int>(pos.x - m_Offset.x) / m_CellSize, static_cast<int>(pos.y - m_Offset.y) / m_CellSize};
 }
 
-// Adds to Cell class in GridComponent.h
 void game::GridComponent::Cell::DigTunnel(const glm::vec2& direction)
 {
 	const int width = 5;
@@ -169,7 +168,6 @@ void game::GridComponent::Cell::DigTunnel(const glm::vec2& direction)
 	}
 }
 
-// Adds to GridComponent.cpp (outside class definition)
 void game::GridComponent::DigTunnel(const glm::ivec2& cell, const glm::vec2& direction)
 {
 	if (!IsCellValid(cell)) return;
