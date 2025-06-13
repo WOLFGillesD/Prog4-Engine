@@ -97,10 +97,10 @@ namespace game
 		ScoreComponent* m_pScore;
 
 		State       m_State{ State::Static };
-		glm::ivec2  m_Cell;
-		glm::ivec2  m_StartFallCell;
-		float       m_FallDelay;
-		float       m_DelayTimer;
+		glm::ivec2  m_Cell{};
+		glm::ivec2  m_StartFallCell{};
+		float       m_FallDelay{};
+		float       m_DelayTimer{};
 
 		void CheckGridBelow();
 		void StartDelay();

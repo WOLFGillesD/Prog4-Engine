@@ -1,6 +1,8 @@
 ﻿#include <stdexcept>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <fstream>
+
 #include "ResourceManager.h"
 #include "Renderer.h"
 #include "Texture2D.h"
@@ -36,6 +38,27 @@ std::shared_ptr<dae::Font> dae::ResourceManager::LoadFont(const std::string& fil
 		m_loadedFonts.insert(std::pair(key,std::make_shared<Font>(fullPath.string(), size)));
 	return m_loadedFonts.at(key);
 	}
+
+std::string dae::ResourceManager::LoadCSV(const std::string& file) const
+{
+	const auto fullPath = m_dataPath / file;
+
+	std::ifstream inFile(fullPath);
+	if (!inFile)
+	{
+		return {};
+	}
+
+	std::ostringstream contents;
+	std::string line;
+
+	while (std::getline(inFile, line))
+	{
+		contents << line << '\n';
+	}
+
+	return contents.str();
+}
 
 void dae::ResourceManager::UnloadUnusedResources()
 {

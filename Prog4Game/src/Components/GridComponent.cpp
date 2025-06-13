@@ -6,6 +6,7 @@
 
 #include "GameObject.h"
 #include "Renderer.h"
+#include "ResourceManager.h"
 #include "SDL_render.h"
 
 game::GridComponent::GridComponent(dae::GameObject& go, int rows, int columns, int cellSize, const glm::vec2& offset)
@@ -62,6 +63,26 @@ void game::GridComponent::SetCellState(int index, Cell::State state)
 		throw std::out_of_range("Cell index out of range");
 	}
 	m_Cells[index].state = state;
+}
+
+void game::GridComponent::SetSubCellStates(int column, int row, SubCell::SubState state)
+{
+	if (column < 0 || column >= m_Columns || row < 0 || row >= m_Rows)
+	{
+		throw std::out_of_range("Cell index out of range");
+	}
+	for (auto& subCell : m_Cells[row * m_Columns + column].GetSubCells())
+	{
+		subCell.m_SubState = state;
+	}
+}
+
+void game::GridComponent::SetSubCellStates(int index, SubCell::SubState state)
+{
+	int column = index % m_Columns;
+	int row = index / m_Columns;
+
+	SetSubCellStates(column, row, state);
 }
 
 glm::vec2 game::GridComponent::GetCellPosition(const glm::ivec2& cell) const
@@ -176,11 +197,13 @@ void game::GridComponent::DigTunnel(const glm::ivec2& cell, const glm::vec2& dir
 	m_Cells[cellIndex].state = Cell::State::Empty;
 }
 
-bool game::GridComponent::LoadFromCSV(const std::string& csvData)
+bool game::GridComponent::LoadFromCSV(const std::string& filePath)
 {
+	auto csvData = dae::ResourceManager::GetInstance().LoadCSV(filePath);
+
 	std::stringstream ss(csvData);
 	std::string line;
-	int currentRow{};
+	std::vector<std::vector<int>> parsedGrid;
 
 	while (std::getline(ss, line))
 	{
@@ -189,36 +212,57 @@ bool game::GridComponent::LoadFromCSV(const std::string& csvData)
 
 		std::stringstream lineStream(line);
 		std::string cellStr;
-		int currentColumn{};
+		std::vector<int> rowValues;
 
 		while (std::getline(lineStream, cellStr, ';'))
 		{
-			if (currentRow >= m_Rows || currentColumn >= m_Columns)
+			// Remove whitespace
+			cellStr.erase(std::remove_if(cellStr.begin(), cellStr.end(), isspace), cellStr.end());
+
+			if (cellStr.empty())
+				rowValues.push_back(0); // Treat empty as 0
+			else
 			{
-				std::cout << "CSV data exceeds grid size at row " << currentRow << " column " << currentColumn << "\n";
-				return false; // or just break or ignore excess
+				try {
+					rowValues.push_back(std::stoi(cellStr));
+				}
+				catch (const std::exception&) {
+					std::cout << "Invalid cell value in CSV: \"" << cellStr << "\"\n";
+					return false;
+				}
 			}
-
-			int cellValue = std::stoi(cellStr);
-			Cell::State state = Cell::State::Empty;
-
-			state = static_cast<Cell::State>(cellValue);
-
-			SetCellState(currentColumn, currentRow, state);
-			++currentColumn;
 		}
 
-		if (currentColumn != m_Columns)
-		{
-			std::cout << "Warning: CSV row " << currentRow << " column count (" << currentColumn << ") does not match grid columns (" << m_Columns << ")\n";
-		}
-
-		++currentRow;
+		parsedGrid.push_back(std::move(rowValues));
 	}
 
-	if (currentRow != m_Rows)
+	// Check dimensions match
+	if (static_cast<int>(parsedGrid.size()) != m_Rows)
 	{
-		std::cout << "Warning: CSV row count (" << currentRow << ") does not match grid rows (" << m_Rows << ")\n";
+		std::cout << "CSV row count (" << parsedGrid.size() << ") does not match grid rows (" << m_Rows << ")\n";
+		return false;
+	}
+
+	for (size_t r = 0; r < parsedGrid.size(); ++r)
+	{
+		if (static_cast<int>(parsedGrid[r].size()) != m_Columns)
+		{
+			std::cout << "CSV column count mismatch at row " << r << ": got " << parsedGrid[r].size() << ", expected " << m_Columns << "\n";
+			return false;
+		}
+	}
+
+	// Fill the grid
+	for (int row = 0; row < m_Rows; ++row)
+	{
+		for (int col = 0; col < m_Columns; ++col)
+		{
+			int value = parsedGrid[row][col];
+			Cell::State state = (value == 0) ? Cell::State::Empty : Cell::State::Dirt;
+			SubCell::SubState subState = (value == 0) ? SubCell::SubState::Empty : SubCell::SubState::Terrain;
+			SetCellState(col, row, state);
+			SetSubCellStates(col, row, subState);
+		}
 	}
 
 	return true;

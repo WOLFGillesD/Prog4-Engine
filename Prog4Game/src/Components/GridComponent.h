@@ -77,6 +77,8 @@ namespace game
 				}
 			}
 
+			std::vector<SubCell>& GetSubCells() { return m_SubCells; }
+
 			void DigTunnel(const glm::vec2& direction);
 
 			State state{ State::Dirt };
@@ -97,6 +99,9 @@ namespace game
 
 		void SetCellState(int column, int row, Cell::State state);
 		void SetCellState(int index, Cell::State state);
+
+		void SetSubCellStates(int column, int row, SubCell::SubState state);
+		void SetSubCellStates(int index, SubCell::SubState state);
 
 		glm::vec2 GetCellPosition(const glm::ivec2& cell) const;
 		glm::vec2 GetCellPosition(int column, int row) const;
@@ -125,7 +130,7 @@ namespace game
 		int GetRows() const { return m_Rows; }
 
 		void DigTunnel(const glm::ivec2& cell, const glm::vec2& direction);
-		bool LoadFromCSV(const std::string& csvData);
+		bool LoadFromCSV(const std::string& filePath);
 
 	private:
 
