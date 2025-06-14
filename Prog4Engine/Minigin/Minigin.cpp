@@ -97,9 +97,8 @@ dae::Minigin::~Minigin()
 	SDL_Quit();
 }
 
-void dae::Minigin::Run(const std::function<void()>& load)
+void dae::Minigin::Run()
 {
-	load();
 	auto& sceneManager = SceneManager::GetInstance();
 
 	Time::m_FixedTimeStep = m_FixedTimeStep;

@@ -15,12 +15,16 @@ set(GAME_SOURCE
     "src/Components/GridComponent.cpp" 
     "src/Components/States.h"
     "src/Components/Characters/PlayerComponent.cpp"
-    "src/Components/Characters/NPCComponents.cpp")
+    "src/Components/Characters/NPCComponents.cpp"
+    "src/Scenes/SceneLoader.h" 
+    "src/Components/UI/UIControllerComponent.cpp")
 
 set(GAME_INCL
     "src/Components"
+    "src/Scenes"
     "src/Components/Characters"
-    "src/Components/Score")
+    "src/Components/Score"
+    "src/Components/UI")
 
 # list source files here
 add_executable(

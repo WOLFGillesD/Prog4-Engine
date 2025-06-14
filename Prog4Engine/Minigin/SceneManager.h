@@ -11,6 +11,7 @@ namespace dae
 	{
 	public:
 		Scene& CreateScene(const std::string& name);
+		void DestroyScene(const std::string& name);
 
 		void Start();
 
