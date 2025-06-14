@@ -13,6 +13,7 @@ namespace dae
 	public:
 		Scene& CreateScene(const std::string& name);
 		void DestroyScene(const std::string& name);
+		bool ContainsScene(const std::string& name) const;
 
 		void TransitionScene(const std::string& from, const std::function<void()>& func);
 
@@ -32,6 +33,5 @@ namespace dae
 		std::vector<std::shared_ptr<Scene>> m_scenes;
 
 		std::vector<std::string> m_DeletedScenes{};
-		std::vector<std::function<void()>> m_ScenesToLoad{};
 	};
 }

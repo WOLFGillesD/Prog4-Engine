@@ -188,6 +188,15 @@ void game::GridComponent::Cell::DigTunnel(const glm::vec2& direction)
 		if (dig)
 			m_SubCells[i].m_SubState = SubCell::SubState::Empty;
 	}
+
+	if (m_SubCells[1].m_SubState == SubCell::SubState::Empty && m_SubCells[5].m_SubState == SubCell::SubState::Empty)
+		m_SubCells[0] = SubCell::SubState::Empty;
+	if (m_SubCells[3].m_SubState == SubCell::SubState::Empty && m_SubCells[9].m_SubState == SubCell::SubState::Empty)
+		m_SubCells[4] = SubCell::SubState::Empty;
+	if (m_SubCells[15].m_SubState == SubCell::SubState::Empty && m_SubCells[21].m_SubState == SubCell::SubState::Empty)
+		m_SubCells[20] = SubCell::SubState::Empty;
+	if (m_SubCells[19].m_SubState == SubCell::SubState::Empty && m_SubCells[23].m_SubState == SubCell::SubState::Empty)
+		m_SubCells[24] = SubCell::SubState::Empty;
 }
 
 void game::GridComponent::DigTunnel(const glm::ivec2& cell, const glm::vec2& direction)
@@ -275,43 +284,43 @@ void game::GridComponent::Render() const
 	{
 		m_Cells[cell].Render();
 
-		int row = cell / m_Columns;
-		int column = cell % m_Columns;
+		//int row = cell / m_Columns;
+		//int column = cell % m_Columns;
 
-		auto centerPos = glm::ivec2{ m_Offset.x + column * m_CellSize, m_Offset.y + row * m_CellSize } + m_CellSize / 2;
+		//auto centerPos = glm::ivec2{ m_Offset.x + column * m_CellSize, m_Offset.y + row * m_CellSize } + m_CellSize / 2;
 
-		SDL_SetRenderDrawColor(dae::Renderer::GetInstance().GetSDLRenderer(), 255, 0, 0, 255);
+		//SDL_SetRenderDrawColor(dae::Renderer::GetInstance().GetSDLRenderer(), 255, 0, 0, 255);
 
-		// Draw line to the cell in the next column (right neighbor)
-		if (column + 1 < m_Columns)
-		{
-			int rightNeighbor = cell + 1;
-			if (rightNeighbor < m_Cells.size())
-			{
-				auto rightPos = glm::ivec2{ m_Offset.x + (column + 1) * m_CellSize, m_Offset.y + (row) * m_CellSize } + m_CellSize / 2;
-				SDL_RenderDrawLine(dae::Renderer::GetInstance().GetSDLRenderer(),
-					centerPos.x, centerPos.y,
-					rightPos.x, rightPos.y);
-			}
-		}
+		//// Draw line to the cell in the next column (right neighbor)
+		//if (column + 1 < m_Columns)
+		//{
+		//	int rightNeighbor = cell + 1;
+		//	if (rightNeighbor < m_Cells.size())
+		//	{
+		//		auto rightPos = glm::ivec2{ m_Offset.x + (column + 1) * m_CellSize, m_Offset.y + (row) * m_CellSize } + m_CellSize / 2;
+		//		SDL_RenderDrawLine(dae::Renderer::GetInstance().GetSDLRenderer(),
+		//			centerPos.x, centerPos.y,
+		//			rightPos.x, rightPos.y);
+		//	}
+		//}
 
-		// Draw line to the cell in the next row (bottom neighbor)
-		if (row + 1 < m_Rows)
-		{
-			int bottomNeighbor = cell + m_Columns;
-			if (bottomNeighbor < m_Cells.size())
-			{
-				auto bottomPos = glm::ivec2{ m_Offset.x + column * m_CellSize, m_Offset.y + (row + 1) * m_CellSize } + m_CellSize / 2;
-				SDL_RenderDrawLine(dae::Renderer::GetInstance().GetSDLRenderer(),
-					centerPos.x, centerPos.y,
-					bottomPos.x,bottomPos.y);
-			}
-		}
+		//// Draw line to the cell in the next row (bottom neighbor)
+		//if (row + 1 < m_Rows)
+		//{
+		//	int bottomNeighbor = cell + m_Columns;
+		//	if (bottomNeighbor < m_Cells.size())
+		//	{
+		//		auto bottomPos = glm::ivec2{ m_Offset.x + column * m_CellSize, m_Offset.y + (row + 1) * m_CellSize } + m_CellSize / 2;
+		//		SDL_RenderDrawLine(dae::Renderer::GetInstance().GetSDLRenderer(),
+		//			centerPos.x, centerPos.y,
+		//			bottomPos.x,bottomPos.y);
+		//	}
+		//}
 
-		SDL_SetRenderDrawColor(dae::Renderer::GetInstance().GetSDLRenderer(), 0, 255, 0, 255);
+		//SDL_SetRenderDrawColor(dae::Renderer::GetInstance().GetSDLRenderer(), 0, 255, 0, 255);
 
-		SDL_Rect rect{ static_cast<int>(m_Offset.x) + (column)*m_CellSize, static_cast<int>(m_Offset.y) + (row)*m_CellSize , m_CellSize, m_CellSize };
-		SDL_RenderDrawRect(dae::Renderer::GetInstance().GetSDLRenderer(), &rect);
+		//SDL_Rect rect{ static_cast<int>(m_Offset.x) + (column)*m_CellSize, static_cast<int>(m_Offset.y) + (row)*m_CellSize , m_CellSize, m_CellSize };
+		//SDL_RenderDrawRect(dae::Renderer::GetInstance().GetSDLRenderer(), &rect);
 
 	}
 }

@@ -17,7 +17,8 @@ set(GAME_SOURCE
     "src/Components/Characters/PlayerComponent.cpp"
     "src/Components/Characters/NPCComponents.cpp"
     "src/Scenes/SceneLoader.h" 
-    "src/Components/UI/UIControllerComponent.cpp")
+    "src/Components/UI/UIControllerComponent.cpp" 
+    "src/Components/Score/GameManager.cpp")
 
 set(GAME_INCL
     "src/Components"

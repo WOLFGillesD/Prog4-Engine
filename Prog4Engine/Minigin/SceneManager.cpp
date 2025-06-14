@@ -1,4 +1,7 @@
 #include "SceneManager.h"
+
+#include <unordered_set>
+
 #include "Scene.h"
 
 void dae::SceneManager::Update()
@@ -73,11 +76,25 @@ void dae::SceneManager::DestroyScene(const std::string& name)
 	m_DeletedScenes.push_back(name);
 }
 
+bool dae::SceneManager::ContainsScene(const std::string& name) const
+{
+
+	for (const auto& scene : m_scenes)
+	{
+		if (scene->GetName() == name)
+		{
+			return true;
+		}
+	}
+	return false;
+
+}
+
 void dae::SceneManager::TransitionScene(const std::string& from, const std::function<void()>& func)
 {
+	DestroyScene(from);
 	func();
 	Start();
-	DestroyScene(from);
 }
 
 void dae::SceneManager::Start()

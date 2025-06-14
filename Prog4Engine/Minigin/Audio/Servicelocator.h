@@ -30,12 +30,12 @@ namespace dae
 		inline static std::unique_ptr<SoundSystem> m_SoundSystemInstance;
 	};
 
-	class SoundObserver : public BaseObserver<GameObject*>
+	class SoundObserver : public BaseObserver<>
 	{
 		SoundID m_SoundID;
 	public:
 		SoundObserver(SoundID soundID) : m_SoundID(soundID) {}
-		void Trigger(GameObject*) override
+		void Trigger() override
 		{
 			Servicelocator::GetSoundSystem().Play(m_SoundID);
 		}

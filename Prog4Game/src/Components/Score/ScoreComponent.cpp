@@ -7,6 +7,7 @@
 #include <string>
 
 #include "DaeTime.h"
+#include "GameManager.h"
 #include "HealthComponent.h"
 
 game::ScoreComponent::ScoreComponent(dae::GameObject& go)
@@ -58,12 +59,19 @@ void game::ScoreObserver::Trigger(int newScore)
 //	m_sc->AddScore(m_scoreIncrease);
 //}
 
-game::EmeraldComponent::EmeraldComponent(dae::GameObject& go,dae::ColliderComponent* pCollider, ScoreComponent* pScoreComponent)
+game::EmeraldComponent::EmeraldComponent(dae::GameObject& go,dae::ColliderComponent* pCollider, ScoreComponent* pScoreComponent, GamemanagerComponent* pGamemanagerComponent)
 	: Component(go)
 	, m_pCollider(pCollider)
 	, m_pScore(pScoreComponent)
+	, m_pGamemanager(pGamemanagerComponent)
 {
+    pGamemanagerComponent->RegisterEmerald(this);
 	m_pCollider->SetCollisionCallback([this](dae::ColliderComponent& other) { OnCollide(other); });
+}
+
+game::EmeraldComponent::~EmeraldComponent()
+{
+    m_pGamemanager->RemoveEmerald(this);
 }
 
 void game::EmeraldComponent::Update()

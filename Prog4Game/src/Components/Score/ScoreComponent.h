@@ -43,13 +43,13 @@ namespace game
 
 	//	void Execute() override;
 	//};
-
+	class GamemanagerComponent;
 
 	class EmeraldComponent : public dae::Component
 	{
 	public:
-		EmeraldComponent(dae::GameObject& go, dae::ColliderComponent* pCollider, ScoreComponent* pScoreComponent);
-		~EmeraldComponent() override = default;
+		EmeraldComponent(dae::GameObject& go, dae::ColliderComponent* pCollider, ScoreComponent* pScoreComponent, GamemanagerComponent* pGamemanagerComponent);
+		~EmeraldComponent() override;
 
 		EmeraldComponent(const EmeraldComponent&) = delete;
 		EmeraldComponent(EmeraldComponent&&) noexcept = delete;
@@ -64,6 +64,8 @@ namespace game
 		const int m_ScoreValue{ 25 };
 
 		dae::ColliderComponent* m_pCollider;
+		GamemanagerComponent* m_pGamemanager;
+
 		void OnCollide(dae::ColliderComponent& other);
 	};
 
