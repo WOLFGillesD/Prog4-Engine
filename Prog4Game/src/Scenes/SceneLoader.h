@@ -1,23 +1,23 @@
 #pragma once
 
-#include "SceneManager.h"
 #include "ResourceManager.h"
 #include "Scene.h"
+#include "SceneManager.h"
 
 #include "ColliderComponent.h"
-#include "InputManager.h"
-#include "NPCComponents.h"
-#include "Audio/Servicelocator.h"
-#include "Input/EventManager.h"
-#include "Components/FpsComponent.h"
 #include "GridComponent.h"
 #include "HealthComponent.h"
+#include "InputManager.h"
+#include "NPCComponents.h"
 #include "PlayerComponent.h"
 #include "RotatorComponent.h"
 #include "ScoreComponent.h"
 #include "TextComponent.h"
 #include "TextureComponent.h"
 #include "UIControllerComponent.h"
+#include "Audio/Servicelocator.h"
+#include "Components/FpsComponent.h"
+#include "Input/EventManager.h"
 
 
 namespace game
@@ -224,14 +224,19 @@ namespace game
 		auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 		auto font2 = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 15);
 
-		auto go = std::make_shared<dae::GameObject>();
-		go->AddComponent<dae::TextureComponent>("UI/CTITLE.png",2.f, glm::vec2{ 0, 15 });
-		go->SetDepthIndex(10);
-		scene.Add(go);
+		auto bg = std::make_shared<dae::GameObject>();
+		bg->AddComponent<dae::TextureComponent>("UI/CTITLE.png",2.f, glm::vec2{ 0, 15 });
+		bg->SetDepthIndex(10);
+		scene.Add(bg);
+
+		auto manager = std::make_shared<dae::GameObject>();
+		manager->AddComponent<MainScreenUIManagerComponent>(LoadLevel01, []() {}, []() {});
+		scene.Add(manager);
 
 		auto btn1 = std::make_shared<dae::GameObject>();
 		btn1->AddComponent<game::UIButtonComponent>(glm::ivec2{145,50}, glm::ivec2{-40, -10});
 		btn1->AddComponent<dae::TextComponent>("PVE", font);
+		btn1->GetComponent<game::UIButtonComponent>()->GetOnButtonPress()->AddObserver(manager->GetComponent<MainScreenUIManagerComponent>()->GetPVEObserver());
 		btn1->SetLocalPosition(450, 110);
 		scene.Add(btn1);
 
@@ -261,7 +266,7 @@ namespace game
 
 		imk->AddCommand(SDLK_w, dae::InputCommand{ new game::UIMoveUICommand(uiC, 1) , dae::InputState::IsPressed });
 		imk->AddCommand(SDLK_s, dae::InputCommand{ new game::UIMoveUICommand(uiC, -1), dae::InputState::IsPressed });
-		imk->AddCommand(SDLK_s, dae::InputCommand{ new game::UIPressCommand(uiC), dae::InputState::IsPressed });
+		imk->AddCommand(SDLK_SPACE, dae::InputCommand{ new game::UIPressCommand(uiC), dae::InputState::IsPressed });
 
 
 		inputManager.RegisterGamepad(std::move(gp));

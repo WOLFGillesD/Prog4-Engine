@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <vector>
 #include <string>
 #include <memory>
@@ -12,6 +13,8 @@ namespace dae
 	public:
 		Scene& CreateScene(const std::string& name);
 		void DestroyScene(const std::string& name);
+
+		void TransitionScene(const std::string& from, const std::function<void()>& func);
 
 		void Start();
 
@@ -27,5 +30,8 @@ namespace dae
 		friend class Singleton<SceneManager>;
 		SceneManager() = default;
 		std::vector<std::shared_ptr<Scene>> m_scenes;
+
+		std::vector<std::string> m_DeletedScenes{};
+		std::vector<std::function<void()>> m_ScenesToLoad{};
 	};
 }

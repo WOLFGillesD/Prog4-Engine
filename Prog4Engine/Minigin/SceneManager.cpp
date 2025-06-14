@@ -39,6 +39,18 @@ void dae::SceneManager::RemoveMarkedForRemoval()
 	{
 		scene->RemoveMarkedForRemoval();
 	}
+
+	for (auto& name : m_DeletedScenes)
+	{
+		auto newEnd = std::remove_if(
+			m_scenes.begin(), m_scenes.end(),
+			[&](std::shared_ptr<Scene> s) {
+				return s->GetName() == name;
+			}
+		);
+		m_scenes.erase(newEnd, m_scenes.end());
+	}
+	m_DeletedScenes.clear();
 }
 
 void dae::SceneManager::End()
@@ -58,13 +70,14 @@ dae::Scene& dae::SceneManager::CreateScene(const std::string& name)
 
 void dae::SceneManager::DestroyScene(const std::string& name)
 {
-	auto newEnd = std::remove_if(
-		m_scenes.begin(), m_scenes.end(),
-		[&](std::shared_ptr<Scene> s) {
-			return s->GetName() == name;
-		}
-	);
-	m_scenes.erase(newEnd, m_scenes.end());
+	m_DeletedScenes.push_back(name);
+}
+
+void dae::SceneManager::TransitionScene(const std::string& from, const std::function<void()>& func)
+{
+	func();
+	Start();
+	DestroyScene(from);
 }
 
 void dae::SceneManager::Start()
