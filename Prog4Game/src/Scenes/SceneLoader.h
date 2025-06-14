@@ -73,13 +73,18 @@ namespace game
 		//auto scoreObserver = std::make_unique<game::ScoreObserver>(scoreIndicator->GetComponent<dae::TextComponent>());
 		//playerGameObj->GetComponent<game::ScoreComponent>()->OnScoreChanged()->AddObserver(scoreObserver.get());
 
-		playerGameObj->AddComponent<game::PlayerComponent>(goGrid->GetComponent<game::GridComponent>()
+		playerGameObj->AddComponent<game::PlayerComponent>(playerGameObj->GetComponent<dae::ColliderComponent>()
+			, goGrid->GetComponent<game::GridComponent>()
 			, playerGameObj->GetComponent<game::MovementComponent>()
 			, scoreIndicator->GetComponent<dae::TextComponent>()
 			, playerGameObj->GetComponent<game::ScoreComponent>()
 			, playerGameObj->GetComponent<game::HealthComponent>()
 			, &scene);
 		scene.Add(playerGameObj);
+
+		auto lives = std::make_shared<dae::GameObject>();
+		lives->AddComponent<PlayerLivesComponent>(playerGameObj->GetComponent<game::HealthComponent>(), "Player/VUDIG1.png");
+		scene.Add(lives);
 		//eventManager.AddObserver(std::move(scoreObserver));
 
 		imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_UP), dae::InputCommand{ new game::MoveCommand(playerGameObj->GetComponent<game::MovementComponent>(), glm::vec2(0,-1)) });
@@ -268,7 +273,8 @@ namespace game
 		//auto scoreObserver = std::make_unique<game::ScoreObserver>(scoreIndicator->GetComponent<dae::TextComponent>());
 		//playerGameObj->GetComponent<game::ScoreComponent>()->OnScoreChanged()->AddObserver(scoreObserver.get());
 
-		playerGameObj->AddComponent<game::PlayerComponent>(goGrid->GetComponent<game::GridComponent>()
+		playerGameObj->AddComponent<game::PlayerComponent>(playerGameObj->GetComponent<dae::ColliderComponent>()
+			, goGrid->GetComponent<game::GridComponent>()
 			, playerGameObj->GetComponent<game::MovementComponent>()
 			, scoreIndicator->GetComponent<dae::TextComponent>()
 			, playerGameObj->GetComponent<game::ScoreComponent>()
@@ -463,7 +469,8 @@ namespace game
 		//auto scoreObserver = std::make_unique<game::ScoreObserver>(scoreIndicator->GetComponent<dae::TextComponent>());
 		//playerGameObj->GetComponent<game::ScoreComponent>()->OnScoreChanged()->AddObserver(scoreObserver.get());
 
-		playerGameObj->AddComponent<game::PlayerComponent>(goGrid->GetComponent<game::GridComponent>()
+		playerGameObj->AddComponent<game::PlayerComponent>(playerGameObj->GetComponent<dae::ColliderComponent>()
+			, goGrid->GetComponent<game::GridComponent>()
 			, playerGameObj->GetComponent<game::MovementComponent>()
 			, scoreIndicator->GetComponent<dae::TextComponent>()
 			, playerGameObj->GetComponent<game::ScoreComponent>()

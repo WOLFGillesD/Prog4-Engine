@@ -8,6 +8,7 @@
 #include "GridComponent.h"
 #include "HealthComponent.h"
 #include "Renderer.h"
+#include "ResourceManager.h"
 #include "Scene.h"
 #include "ScoreComponent.h"
 #include "TextComponent.h"
@@ -62,17 +63,19 @@ namespace game
     class PlayerComponent final : public dae::Component
     {
     public:
-        PlayerComponent(dae::GameObject& go, GridComponent* pGrid, MovementComponent* pMovementComponent, dae::TextComponent* pTxtComp, game::ScoreComponent* pScoreComponent, HealthComponent* pHealth, dae::Scene* pScene)
+        PlayerComponent(dae::GameObject& go, dae::ColliderComponent* pCollider ,GridComponent* pGrid, MovementComponent* pMovementComponent, dae::TextComponent* pTxtComp, game::ScoreComponent* pScoreComponent, HealthComponent* pHealth, dae::Scene* pScene)
             : Component(go)
 			, movementState{ pMovementComponent }
             , m_pGrid{ pGrid }
 			, m_ScoreObserver(std::make_unique<game::ScoreObserver>(pTxtComp))
 			, m_pHealthComp(pHealth)
             , m_pScene(pScene)
+			, m_pCollider(pCollider)
         {
             pHealth->GetOnDieEvent()->AddObserver(&m_HealthObserver);
             ChangeState(&movementState);
 			pScoreComponent->OnScoreChanged()->AddObserver(m_ScoreObserver.get());
+            m_pCollider->SetCollisionCallback([this](dae::ColliderComponent& other) { OnCollide(other); });
         }
 
         void ChangeState(IState* newState);
@@ -82,10 +85,12 @@ namespace game
         IState*     currentState{ nullptr };
 
         void OnHealthChanged(int newHealth);
+        void OnCollide(dae::ColliderComponent& other);
     private:
 
 		std::unique_ptr<ScoreObserver> m_ScoreObserver;
 
+        dae::ColliderComponent* m_pCollider;
         GridComponent* m_pGrid;
 		MovementComponent* m_pMovementComponent;
         HealthComponent* m_pHealthComp;
@@ -109,18 +114,28 @@ namespace game
     class PlayerLivesComponent : public dae::Component
     {
     public:
-	    PlayerLivesComponent(dae::GameObject& go, HealthComponent* pHealth)
+	    PlayerLivesComponent(dae::GameObject& go, HealthComponent* pHealth, const std::string& path, float scale = 1.f)
 		    : Component(go)
 			, m_pHealthComp(pHealth)
+			, m_Scale(scale)
 	    {
-
+            m_Texture2D = dae::ResourceManager::GetInstance().LoadTexture(path);
+            pHealth->GetOnDieEvent()->AddObserver(&m_healthObserver);
+            m_CurrentLives = pHealth->GetLives();
 	    }
+
+        void UpdateLives(int count);
+        
+        Observer<int> m_healthObserver{ this, &PlayerLivesComponent::UpdateLives};
 
         void Render() const override;
 
     private:
         HealthComponent* m_pHealthComp;
+        std::shared_ptr<dae::Texture2D> m_Texture2D;
 
+        int m_CurrentLives;
+        float m_Scale;
     };
 
 }

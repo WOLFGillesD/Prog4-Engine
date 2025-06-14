@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "DaeTime.h"
+#include "Texture2D.h"
 
 namespace game
 {
@@ -41,6 +42,15 @@ namespace game
 		std::cout << "Health: " << newHealth << std::endl;
 	}
 
+	void PlayerComponent::OnCollide(dae::ColliderComponent& other)
+	{
+		if (other.GetTag() == "Enemy")
+		{
+			m_pHealthComp->Die();
+		}
+
+	}
+
 	//MoveCommand::MoveCommand(PlayerComponent* pActor, const glm::vec2& inputDirection)
 	//	: m_pActor(pActor), m_InputDirection(inputDirection)
 	//{
@@ -57,9 +67,22 @@ namespace game
 		m_pMovementComponent->HandleInput(m_InputDirection);
 	}
 
+	void PlayerLivesComponent::UpdateLives(int count)
+	{
+		m_CurrentLives = count;
+	}
+
 	void PlayerLivesComponent::Render() const
 	{
-		
+		for (int img{}; img < m_CurrentLives; ++img)
+		{
+			auto offset = (m_Texture2D.get()->GetSize().x + 10) * img;
+
+			dae::Renderer::GetInstance().RenderTexture(*m_Texture2D, offset + GetOwner()->GetWorldTransform().GetPosition().x,
+			                                           GetOwner()->GetWorldTransform().GetPosition().y,
+			                                           m_Scale * static_cast<float>(m_Texture2D->GetSize().x),
+			                                           m_Scale * static_cast<float>(m_Texture2D->GetSize().y));
+		}
 	}
 
 	MovementComponent::MovementComponent(dae::GameObject& go, GridComponent* grid, float speed, const glm::ivec2& startCell, bool canDig)
