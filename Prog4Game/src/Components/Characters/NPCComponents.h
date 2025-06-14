@@ -1,9 +1,11 @@
 #pragma once
 #include <memory>
+#include <random>
 
 #include "Component.h"
 #include "HealthComponent.h"
 #include "PlayerComponent.h"
+#include "Scene.h"
 #include "ScoreComponent.h"
 
 namespace game
@@ -73,5 +75,38 @@ namespace game
         Observer<> m_HealthObserver;
 
         glm::ivec2 m_Direction{ 1,0 };  // initial direction right
+    };
+
+    class EnemySpawner final : public dae::Component
+    {
+    public:
+        EnemySpawner(dae::GameObject& go,
+            GridComponent* pGrid,
+            PlayerComponent* pPlayer,
+            ScoreComponent* pScore,
+            dae::Scene* pScene,
+            float spawnInterval = 5.f,
+            int maxEnemies = 4,
+            float hobbinChance = 0.1f);
+        void Update() override;
+
+    private:
+        GridComponent* m_pGrid;
+        PlayerComponent* m_pPlayer;
+        ScoreComponent* m_pScore;
+        dae::Scene* m_pScene;
+
+        float m_SpawnInterval;
+        int m_MaxEnemies;
+        float m_HobbinChance;
+
+        float m_ElapsedTime{ 0.f };
+        int m_ActiveCount{ 0 };
+
+        std::mt19937 m_Rng;
+        std::uniform_real_distribution<float> m_ChanceDist;
+
+        // Helpers
+        void SpawnEnemy();
     };
 }

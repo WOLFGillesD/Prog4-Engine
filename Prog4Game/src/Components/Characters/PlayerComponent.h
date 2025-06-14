@@ -8,6 +8,7 @@
 #include "GridComponent.h"
 #include "HealthComponent.h"
 #include "Renderer.h"
+#include "Scene.h"
 #include "ScoreComponent.h"
 #include "TextComponent.h"
 
@@ -61,12 +62,13 @@ namespace game
     class PlayerComponent final : public dae::Component
     {
     public:
-        PlayerComponent(dae::GameObject& go, GridComponent* pGrid, MovementComponent* pMovementComponent, dae::TextComponent* pTxtComp, game::ScoreComponent* pScoreComponent, HealthComponent* pHealth)
+        PlayerComponent(dae::GameObject& go, GridComponent* pGrid, MovementComponent* pMovementComponent, dae::TextComponent* pTxtComp, game::ScoreComponent* pScoreComponent, HealthComponent* pHealth, dae::Scene* pScene)
             : Component(go)
 			, movementState{ pMovementComponent }
             , m_pGrid{ pGrid }
 			, m_ScoreObserver(std::make_unique<game::ScoreObserver>(pTxtComp))
 			, m_pHealthComp(pHealth)
+            , m_pScene(pScene)
         {
             pHealth->GetOnDieEvent()->AddObserver(&m_HealthObserver);
             ChangeState(&movementState);
@@ -87,6 +89,7 @@ namespace game
         GridComponent* m_pGrid;
 		MovementComponent* m_pMovementComponent;
         HealthComponent* m_pHealthComp;
+        dae::Scene* m_pScene;
 
         Observer<int> m_HealthObserver{this, &PlayerComponent::OnHealthChanged};
 

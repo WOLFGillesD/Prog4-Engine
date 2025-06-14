@@ -2,6 +2,8 @@
 
 #include <array>
 
+#include "TextureComponent.h"
+
 namespace game
 {
 	void Nobbin::Update()
@@ -128,5 +130,80 @@ namespace game
     {
         m_pScoreComponent->AddScore(m_Score);
         GetOwner()->SetMarkForRemoval();
+    }
+
+    EnemySpawner::EnemySpawner(dae::GameObject& go,
+        GridComponent* pGrid,
+        PlayerComponent* pPlayer,
+        ScoreComponent* pScore,
+        dae::Scene* pScene,
+        float spawnInterval,
+        int maxEnemies,
+        float hobbinChance)
+        : Component(go)
+        , m_pGrid(pGrid)
+        , m_pPlayer(pPlayer)
+        , m_pScore(pScore)
+        , m_SpawnInterval(spawnInterval)
+        , m_MaxEnemies(maxEnemies)
+        , m_HobbinChance(hobbinChance)
+        , m_Rng(std::random_device{}())
+        , m_ChanceDist(0.f, 1.f)
+		, m_pScene(pScene)
+    {
+    }
+
+    void EnemySpawner::Update()
+    {
+        m_ElapsedTime += dae::Time::m_DeltaTime;
+        // Remove dead count? Could listen to death events to decrement m_ActiveCount.
+
+        if (m_ActiveCount >= m_MaxEnemies) return;
+        if (m_ElapsedTime < m_SpawnInterval) return;
+
+        m_ElapsedTime = 0.f;
+        SpawnEnemy();
+        m_ActiveCount++;
+    }
+
+    void EnemySpawner::SpawnEnemy()
+    {
+        float roll = m_ChanceDist(m_Rng);
+
+        if (roll < m_HobbinChance)
+        {
+			auto npc1 = std::make_shared<dae::GameObject>();
+			npc1->AddComponent<game::MovementComponent>(m_pGrid, 100.f, glm::ivec2{ 14,0 });
+
+			npc1->AddComponent<dae::SpriteComponent>("Player/PlayerMovement.png", 1, 6, 0, 90.f);
+			npc1->AddComponent<dae::ColliderComponent>(glm::vec2(40, 40), glm::vec2(0, 0), "Enemy");
+			npc1->AddComponent<game::HealthComponent>();
+
+			npc1->AddComponent<game::Hobbin>(m_pGrid
+				, npc1->GetComponent<game::MovementComponent>()
+				, m_pPlayer
+				, m_pScore
+				, npc1->GetComponent<game::HealthComponent>());
+
+			m_pScene->Add(npc1);
+        }
+        else
+        {
+            auto npc1 = std::make_shared<dae::GameObject>();
+            npc1->AddComponent<game::MovementComponent>(m_pGrid, 100.f, glm::ivec2{ 14,0 });
+
+            npc1->AddComponent<dae::SpriteComponent>("Player/PlayerMovement.png", 1, 6, 0, 90.f);
+            npc1->AddComponent<dae::ColliderComponent>(glm::vec2(40, 40), glm::vec2(0, 0), "Enemy");
+            npc1->AddComponent<game::HealthComponent>();
+
+            npc1->AddComponent<game::Nobbin>(m_pGrid
+                , npc1->GetComponent<game::MovementComponent>()
+                , m_pPlayer
+                , m_pScore
+                , npc1->GetComponent<game::HealthComponent>());
+
+            m_pScene->Add(npc1);
+        }
+        // Add to scene
     }
 }

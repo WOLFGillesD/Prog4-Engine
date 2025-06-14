@@ -17,8 +17,6 @@
 #include "TextureComponent.h"
 #include "UIControllerComponent.h"
 #include "Audio/Servicelocator.h"
-#include "Components/FpsComponent.h"
-#include "Input/EventManager.h"
 
 
 namespace game
@@ -79,7 +77,8 @@ namespace game
 			, playerGameObj->GetComponent<game::MovementComponent>()
 			, scoreIndicator->GetComponent<dae::TextComponent>()
 			, playerGameObj->GetComponent<game::ScoreComponent>()
-			, playerGameObj->GetComponent<game::HealthComponent>());
+			, playerGameObj->GetComponent<game::HealthComponent>()
+			, &scene);
 		scene.Add(playerGameObj);
 		//eventManager.AddObserver(std::move(scoreObserver));
 
@@ -168,6 +167,14 @@ namespace game
 				}
 			}
 		}
+
+		auto npcSpawner = std::make_shared<dae::GameObject>();
+
+		npcSpawner->AddComponent<game::EnemySpawner>(goGrid->GetComponent<GridComponent>(),
+			playerGameObj->GetComponent<PlayerComponent>(),
+			playerGameObj->GetComponent<ScoreComponent>(),
+			&scene);
+		scene.Add(npcSpawner);
 
 		// NOBIN
 		//auto npc1 = std::make_shared<dae::GameObject>();
@@ -265,7 +272,8 @@ namespace game
 			, playerGameObj->GetComponent<game::MovementComponent>()
 			, scoreIndicator->GetComponent<dae::TextComponent>()
 			, playerGameObj->GetComponent<game::ScoreComponent>()
-			, playerGameObj->GetComponent<game::HealthComponent>());
+			, playerGameObj->GetComponent<game::HealthComponent>()
+			, &scene);
 		scene.Add(playerGameObj);
 		//eventManager.AddObserver(std::move(scoreObserver));
 
@@ -354,6 +362,14 @@ namespace game
 				}
 			}
 		}
+
+		auto npcSpawner = std::make_shared<dae::GameObject>();
+
+		npcSpawner->AddComponent<game::EnemySpawner>(goGrid->GetComponent<GridComponent>(),
+			playerGameObj->GetComponent<PlayerComponent>(),
+			playerGameObj->GetComponent<ScoreComponent>(),
+			&scene);
+		scene.Add(npcSpawner);
 
 		// NOBIN
 		//auto npc1 = std::make_shared<dae::GameObject>();
@@ -451,7 +467,8 @@ namespace game
 			, playerGameObj->GetComponent<game::MovementComponent>()
 			, scoreIndicator->GetComponent<dae::TextComponent>()
 			, playerGameObj->GetComponent<game::ScoreComponent>()
-			, playerGameObj->GetComponent<game::HealthComponent>());
+			, playerGameObj->GetComponent<game::HealthComponent>()
+			, &scene);
 		scene.Add(playerGameObj);
 		//eventManager.AddObserver(std::move(scoreObserver));
 
@@ -540,6 +557,14 @@ namespace game
 				}
 			}
 		}
+
+		auto npcSpawner = std::make_shared<dae::GameObject>();
+
+		npcSpawner->AddComponent<game::EnemySpawner>(goGrid->GetComponent<GridComponent>(),
+			playerGameObj->GetComponent<PlayerComponent>(),
+			playerGameObj->GetComponent<ScoreComponent>(),
+			&scene);
+		scene.Add(npcSpawner);
 
 		// NOBIN
 		//auto npc1 = std::make_shared<dae::GameObject>();
