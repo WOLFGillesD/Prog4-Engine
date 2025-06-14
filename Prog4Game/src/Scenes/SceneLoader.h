@@ -84,6 +84,7 @@ namespace game
 
 		auto lives = std::make_shared<dae::GameObject>();
 		lives->AddComponent<PlayerLivesComponent>(playerGameObj->GetComponent<game::HealthComponent>(), "Player/VUDIG1.png");
+		lives->SetLocalPosition(10, 40);
 		scene.Add(lives);
 		//eventManager.AddObserver(std::move(scoreObserver));
 

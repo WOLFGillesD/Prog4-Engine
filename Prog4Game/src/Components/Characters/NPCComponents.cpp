@@ -175,7 +175,7 @@ namespace game
 			auto npc1 = std::make_shared<dae::GameObject>();
 			npc1->AddComponent<game::MovementComponent>(m_pGrid, 100.f, glm::ivec2{ 14,0 });
 
-			npc1->AddComponent<dae::SpriteComponent>("Player/PlayerMovement.png", 1, 6, 0, 90.f);
+			npc1->AddComponent<dae::SpriteComponent>("VRHOB1.png", 1, 1, 0, 0.f, false);
 			npc1->AddComponent<dae::ColliderComponent>(glm::vec2(40, 40), glm::vec2(0, 0), "Enemy");
 			npc1->AddComponent<game::HealthComponent>();
 
@@ -192,7 +192,7 @@ namespace game
             auto npc1 = std::make_shared<dae::GameObject>();
             npc1->AddComponent<game::MovementComponent>(m_pGrid, 100.f, glm::ivec2{ 14,0 });
 
-            npc1->AddComponent<dae::SpriteComponent>("Player/PlayerMovement.png", 1, 6, 0, 90.f);
+            npc1->AddComponent<dae::SpriteComponent>("VNOBD.png", 1, 1, 0, 0.f, false);
             npc1->AddComponent<dae::ColliderComponent>(glm::vec2(40, 40), glm::vec2(0, 0), "Enemy");
             npc1->AddComponent<game::HealthComponent>();
 
