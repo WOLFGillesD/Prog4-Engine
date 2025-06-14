@@ -100,12 +100,12 @@ namespace game
 
 		void OnPVPPress()
 		{
-			dae::SceneManager::GetInstance().TransitionScene("Main menu", m_F2);
+			//dae::SceneManager::GetInstance().TransitionScene("Main menu", m_F2);
 
 		}
 		void OnCoOpPress()
 		{
-			dae::SceneManager::GetInstance().TransitionScene("Main menu", m_F3);
+			//dae::SceneManager::GetInstance().TransitionScene("Main menu", m_F3);
 
 		}
 	private:

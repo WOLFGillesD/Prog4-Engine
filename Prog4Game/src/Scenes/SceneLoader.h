@@ -260,9 +260,9 @@ namespace game
 		uiC->RegisterButton(btn3->GetComponent<UIButtonComponent>());
 		scene.Add(uiController);
 
-		imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_UP), dae::InputCommand{ new game::UIMoveUICommand(uiC, 1) });
-		imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_DOWN), dae::InputCommand{ new game::UIMoveUICommand(uiC, -1) });
-		imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_A), dae::InputCommand{ new game::UIPressCommand(uiC) });
+		imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_UP), dae::InputCommand{ new game::UIMoveUICommand(uiC, 1), dae::InputState::IsDown });
+		imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_DPAD_DOWN), dae::InputCommand{ new game::UIMoveUICommand(uiC, -1), dae::InputState::IsDown });
+		imc->AddCommand(static_cast<unsigned int>(GamePadInput::GAMEPAD_A), dae::InputCommand{ new game::UIPressCommand(uiC), dae::InputState::IsDown });
 
 		imk->AddCommand(SDLK_w, dae::InputCommand{ new game::UIMoveUICommand(uiC, 1) , dae::InputState::IsPressed });
 		imk->AddCommand(SDLK_s, dae::InputCommand{ new game::UIMoveUICommand(uiC, -1), dae::InputState::IsPressed });
