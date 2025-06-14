@@ -105,8 +105,7 @@ namespace game
 		}
 		void OnCoOpPress()
 		{
-			//dae::SceneManager::GetInstance().TransitionScene("Main menu", m_F3);
-
+			dae::SceneManager::GetInstance().TransitionScene("Main menu", m_F3);
 		}
 	private:
 

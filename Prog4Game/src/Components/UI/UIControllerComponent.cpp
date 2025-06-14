@@ -57,6 +57,6 @@ namespace game
 
 	void UIPressCommand::Execute()
 	{
-		m_UIC->Press();
+ 		m_UIC->Press();
 	}
 }
